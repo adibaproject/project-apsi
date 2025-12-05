@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+    background: #1E3A8A;
+}
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background: white;
+    padding: 40px;
+    width: 300px;
+    border-radius: 15px;
+}

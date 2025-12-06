@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+
+<style>
+  body{
+    margin:0;
+    background: linear-gradient(180deg,#CFE7FF 0%,#A7D3FF 40%,#87C3FF 100%);
+    height:100vh;
+    overflow:hidden;
+    font-family:'Rubik Bubbles', cursive;
+  }
+
+  a{text-decoration:none !important;}
+
+  .back-btn{
+    position:absolute;
+    top:12px;
+    right:14px;
+    z-index:40;
+    background:rgba(0,0,0,0.35);
+    padding:8px 16px;
+    border-radius:10px;
+    color:white;
+    font-size:14px;
+    backdrop-filter:blur(3px);
+    transition:.25s;
+  }
+  .back-btn:hover{ background:rgba(0,0,0,0.55); transform:scale(1.05); }
+
+  @keyframes cloudScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+  }
+
+  .awan-bawah {
+      position: fixed;
+      bottom: -40px;
+      left: 0;
+      width: 150%;
+      height: auto;
+      z-index: 0;
+      overflow: hidden;
+      animation: cloudScroll 38s linear infinite;
+      opacity: 0.9;
+  }
+
+  .dino-tengah{
+    position:absolute;
+    top:30%;
+    left:50%;
+    transform:translateX(-50%);
+    width:400px;
+    z-index:12;
+  }
+
+  .grid{
+    position:absolute;
+    top:58%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:82%;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap:16px;
+    z-index:20;
+  }
+
+  .item{
+    background:rgba(0,140,80,0.35);
+    height:70px;
+    border-radius:18px;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    backdrop-filter:blur(4px);
+    transition:.25s;
+  }
+  .item:hover{
+    transform:translateY(-6px);
+    background:rgba(0,140,80,0.55);
+  }
+
+  .welcome-box{
+    position:absolute;
+    right:16px;
+    bottom:16px;
+    display:flex;
+    align-items:center;
+    background:rgba(255,255,255,0.55);
+    padding:10px 16px;
+    border-radius:14px;
+    backdrop-filter:blur(4px);
+    z-index:50;
+  }
+  .welcome-box img{
+    width:50px;
+    margin-right:10px;
+  }
+  .welcome-text{
+    font-size:18px;
+    color:#202020;
+  }
+
+  @media(max-width:420px){
+    .item{ font-size:17px; height:60px; }
+    .grid{ width:90%; grid-gap:12px; }
+    .dino-tengah{ width:210px; top:30%; }
+    .awan-bawah{ bottom:-30px; width:170%; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- FIXED: kembali ke dashboard-guru -->
+<a href="dashboard-guru.html" class="back-btn">Kembali</a>
+
+<img src="awan.png" class="awan-bawah">
+
+<img src="dino-tengah.png" class="dino-tengah">
+
+<div class="grid">
+  <a href="petualangan-huruf.html" class="item">Petualangan Huruf</a>
+  <a href="kata-kata-ajaib.html" class="item">Kata-kata Ajaib</a>
+  <a href="kartu-kata-pintar.html" class="item">Kartu Kata Pintar</a>
+  <a href="tebak-gambar-seru.html" class="item">Tebak Gambar Seru</a>
+</div>
+
+<div class="welcome-box">
+  <img src="dino-guru.png" alt="dino">
+  <div class="welcome-text">Selamat datang..</div>
+</div>
+
+</body>
+</html>

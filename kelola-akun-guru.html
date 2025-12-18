@@ -16,36 +16,24 @@ body{
   background:#f4f6fb;
 }
 
-.container{
-  padding:30px;
-}
+.container{ padding:30px; }
 
-/* TOMBOL KEMBALI (HITAM TRANSPARAN) */
 .back-btn{
   position:fixed;
   top:20px;
   right:20px;
   padding:10px 18px;
-  background:rgba(0,0,0,0.45);
+  background:rgba(0,0,0,0.55);
   color:#fff;
   text-decoration:none;
-  border-radius:10px;
+  border-radius:12px;
   font-weight:600;
   font-size:14px;
   backdrop-filter: blur(4px);
   z-index:9999;
-  transition:transform 0.2s ease, background 0.2s ease;
+  transition:.2s;
 }
-
-.back-btn:hover{
-  transform:scale(1.08);
-  background:rgba(0,0,0,0.65);
-}
-
-/* HEADER */
-.top-bar{
-  margin-bottom:20px;
-}
+.back-btn:hover{ transform:scale(1.08); }
 
 button{
   padding:12px;
@@ -53,14 +41,13 @@ button{
   border-radius:8px;
   cursor:pointer;
   font-weight:600;
-  font-size:14px;
 }
 
 .btn-primary{ background:#2f3e9e; color:#fff; }
 .btn-danger{ background:#e74c3c; color:#fff; }
 .btn-warning{ background:#f39c12; color:#fff; }
 .btn-success{ background:#27ae60; color:#fff; }
-.btn-cancel{ background:#e0e0e0; color:#333; }
+.btn-cancel{ background:#ddd; }
 
 table{
   width:100%;
@@ -75,11 +62,8 @@ th,td{
   border-bottom:1px solid #eee;
 }
 
-th{
-  background:#f0f2ff;
-}
+th{ background:#f0f2ff; }
 
-/* MODAL */
 .modal{
   display:none;
   position:fixed;
@@ -96,29 +80,17 @@ th{
   border-radius:16px;
 }
 
-.modal-content h3{
-  margin:0 0 18px;
-  text-align:center;
-}
-
 .modal-content input{
   width:100%;
   padding:12px;
   margin-bottom:12px;
   border-radius:8px;
   border:1px solid #ccc;
-  font-size:14px;
 }
 
 .modal-footer{
   display:flex;
   gap:10px;
-  margin-top:10px;
-}
-
-.modal-footer button{
-  flex:1;
-  height:42px;
 }
 </style>
 </head>
@@ -128,18 +100,14 @@ th{
 <a href="dashboard-admin.html" class="back-btn">Kembali</a>
 
 <div class="container">
-
-  <div class="top-bar">
-    <h1>Kelola Akun Guru</h1>
-  </div>
-
+  <h1>Kelola Akun Guru</h1>
   <button class="btn-primary" onclick="openTambah()">+ Tambah Akun Guru</button>
   <br><br>
 
   <table>
     <thead>
       <tr>
-        <th>Username</th>
+        <th>Email</th>
         <th>Status</th>
         <th>Aksi</th>
       </tr>
@@ -148,12 +116,11 @@ th{
   </table>
 </div>
 
-<!-- MODAL -->
 <div class="modal" id="modalGuru">
   <div class="modal-content">
     <h3 id="modalTitle"></h3>
 
-    <input id="username" placeholder="Username">
+    <input id="email" placeholder="Email guru">
     <input id="password" type="password" placeholder="Password">
 
     <div class="modal-footer">
@@ -166,9 +133,10 @@ th{
 <script>
 let editIndex = null;
 
+/* AUTO SEED BIAR NETLIFY AMAN */
 if(!localStorage.getItem("guruAccounts")){
   localStorage.setItem("guruAccounts", JSON.stringify([
-    { username:"guru", password:"gurumimo123", aktif:true }
+    { email:"guru@mimo.com", password:"123", aktif:true }
   ]));
 }
 
@@ -176,14 +144,12 @@ const getData = () => JSON.parse(localStorage.getItem("guruAccounts"));
 const saveData = d => localStorage.setItem("guruAccounts", JSON.stringify(d));
 
 function render(){
-  const tbody = document.getElementById("guruTable");
-  tbody.innerHTML = "";
-
+  guruTable.innerHTML = "";
   getData().forEach((g,i)=>{
-    tbody.innerHTML += `
+    guruTable.innerHTML += `
     <tr>
-      <td>${g.username}</td>
-      <td>${g.aktif ? "Aktif" : "Terhapus"}</td>
+      <td>${g.email}</td>
+      <td>${g.aktif ? "Aktif" : "Nonaktif"}</td>
       <td>
         ${g.aktif
           ? `<button class="btn-warning" onclick="openEdit(${i})">Edit</button>
@@ -196,57 +162,44 @@ function render(){
 }
 
 function openTambah(){
-  editIndex = null;
-  modalTitle.innerText = "Tambah Akun Guru";
-  username.value = "";
-  password.value = "";
-  modalGuru.style.display = "flex";
+  editIndex=null;
+  modalTitle.innerText="Tambah Akun Guru";
+  email.value="";
+  password.value="";
+  modalGuru.style.display="flex";
 }
 
 function openEdit(i){
-  const g = getData()[i];
-  editIndex = i;
-  modalTitle.innerText = "Edit Akun Guru";
-  username.value = g.username;
-  password.value = g.password;
-  modalGuru.style.display = "flex";
+  const g=getData()[i];
+  editIndex=i;
+  modalTitle.innerText="Edit Akun Guru";
+  email.value=g.email;
+  password.value=g.password;
+  modalGuru.style.display="flex";
 }
 
-function closeModal(){
-  modalGuru.style.display = "none";
-}
+function closeModal(){ modalGuru.style.display="none"; }
 
 function simpan(){
-  if(!username.value || !password.value){
-    alert("Username dan password wajib diisi");
+  if(!email.value || !password.value){
+    alert("Email & password wajib diisi");
     return;
   }
 
-  const data = getData();
-  const obj = { username:username.value, password:password.value, aktif:true };
+  const data=getData();
+  const obj={ email:email.value.toLowerCase(), password:password.value, aktif:true };
 
-  editIndex === null
+  editIndex===null
     ? data.push(obj)
-    : data[editIndex] = {...data[editIndex], ...obj};
+    : data[editIndex]={...data[editIndex], ...obj};
 
   saveData(data);
   closeModal();
   render();
 }
 
-function hapus(i){
-  const d=getData();
-  d[i].aktif=false;
-  saveData(d);
-  render();
-}
-
-function restore(i){
-  const d=getData();
-  d[i].aktif=true;
-  saveData(d);
-  render();
-}
+function hapus(i){ const d=getData(); d[i].aktif=false; saveData(d); render(); }
+function restore(i){ const d=getData(); d[i].aktif=true; saveData(d); render(); }
 
 render();
 </script>

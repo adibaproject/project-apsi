@@ -42,7 +42,18 @@
       top:6px;
       width:180px;
       z-index:5;
+      animation: awanKedut 3.2s ease-in-out infinite;
+      transform-origin: center bottom;
     }
+
+    @keyframes awanKedut {
+      0%   { transform: translateY(0) rotate(0deg); }
+      25%  { transform: translateY(-3px) rotate(-1deg); }
+      50%  { transform: translateY(2px) rotate(1deg); }
+      75%  { transform: translateY(-2px) rotate(-0.5deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+
     .awan-left{ left:8px; }
     .awan-right{ right:8px; transform:scaleX(-1); }
 
@@ -67,7 +78,7 @@
 
     .dino-mid{
       position:absolute;
-      bottom:150px;
+      bottom:50px;
       left:50%;
       transform:translateX(-50%);
       width:300px;
@@ -114,6 +125,53 @@
       z-index:10;
     }
 
+    /* ===== WELCOME BOX ===== */
+    .welcome-box{
+      position:absolute;
+      right:16px;
+      bottom:16px;
+      display:flex;
+      align-items:center;
+      background:rgba(255,255,255,0.55);
+      padding:10px 16px;
+      border-radius:14px;
+      backdrop-filter:blur(4px);
+      z-index:50;
+    }
+    .welcome-box img{
+      width:50px;
+      margin-right:10px;
+    }
+    .welcome-text{
+      font-size:18px;
+      color:#202020;
+    }
+
+    /* ===== SOUND ICON ===== */
+    .sound-btn{
+      position:absolute;
+      left:16px;
+      bottom:18px;
+      width:54px;
+      height:54px;
+      background:rgba(255,255,255,0.6);
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:60;
+      backdrop-filter:blur(4px);
+      transition:.25s;
+    }
+    .sound-btn:hover{
+      transform:scale(1.1);
+      background:rgba(255,255,255,0.8);
+    }
+    .sound-btn img{
+      width:30px;
+    }
+
     @media(max-width:720px){
       :root{ --sun-size:120px; }
       .dino-mid{ width:240px; bottom:140px; }
@@ -121,25 +179,24 @@
       .card{ font-size:18px; height:64px; }
       .awan-top{ width:140px; }
     }
+
     @media(max-width:420px){
       :root{ --sun-size:100px; }
       .dino-mid{ width:200px; bottom:135px; }
       .side-container{ top:60%; width:46%; }
       .card{ font-size:16px; height:60px; }
-      .back-btn{ font-size:13px; padding:7px 12px; }
     }
   </style>
 </head>
+
 <body>
 
-  <a href="index.html" class="back-btn">Kembali</a>
+  <a href="index.html" class="back-btn">Logout</a>
 
-  <img src="awan-atas.png" class="awan-top awan-left" alt="awan kiri">
-  <img src="awan-atas.png" class="awan-top awan-right" alt="awan kanan">
-
-  <img src="sun.png" class="sun" alt="matahari">
-
-  <img src="dino-guru.png" class="dino-mid" alt="dino">
+  <img src="awan-atas.png" class="awan-top awan-left">
+  <img src="awan-atas.png" class="awan-top awan-right">
+  <img src="sun.png" class="sun">
+  <img src="dino-guru.png" class="dino-mid">
 
   <div class="side-container left-side">
     <a href="materi.html" class="card">Materi</a>
@@ -151,7 +208,37 @@
     <a href="panduan.html" class="card">Panduan</a>
   </div>
 
-  <div class="tanah" aria-hidden="true"></div>
+  <div class="tanah"></div>
+
+  <div class="welcome-box">
+    <img src="dino-guru.png">
+    <div class="welcome-text">Selamat datang..</div>
+  </div>
+
+  <!-- 🔊 SOUND DASHBOARD -->
+  <div class="sound-btn" onclick="toggleSound()">
+    <img id="soundIcon" src="sound.png">
+  </div>
+
+  <audio id="bgSound" src="sound-dashboard.mp3" loop></audio>
+
+<script>
+  const bgSound = document.getElementById("bgSound");
+  const icon = document.getElementById("soundIcon");
+  let playing = false;
+
+  function toggleSound(){
+    if(!playing){
+      bgSound.play();
+      playing = true;
+      icon.style.opacity = "1";
+    }else{
+      bgSound.pause();
+      playing = false;
+      icon.style.opacity = "0.6";
+    }
+  }
+</script>
 
 </body>
 </html>

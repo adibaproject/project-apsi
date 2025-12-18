@@ -1,53 +1,328 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petualangan Huruf</title>
+<meta charset="UTF-8">
+<title>Quiz Dino</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+<style>
+body{
+  margin:0;
+  font-family:"Comic Sans MS", Arial, sans-serif;
+  min-height:100vh;
+  color:white;
+  background:
+    url("tanah.png") bottom center no-repeat,
+    linear-gradient(#0b1d3a,#020824);
+  background-size:100% auto,cover;
+  overflow-x:hidden;
+}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Rubik Bubbles', cursive;
-            background: linear-gradient(180deg, #CFE7FF 0%, #A7D3FF 40%, #87C3FF 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+.cloud{
+  position:absolute;
+  top:40px;
+  width:220px;
+  opacity:.6;
+  animation: cloudWiggle 6s ease-in-out infinite;
+}
+.cloud.left{ left:40px; }
+.cloud.right{ top:90px; right:40px; animation-delay:2s; }
 
-        .back {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            padding: 8px 16px;
-            background: rgba(0,0,0,0.35);
-            border-radius: 10px;
-            color: white;
-            text-decoration: none;
-        }
+@keyframes cloudWiggle{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(20px)}
+  50%{transform:translateX(0)}
+  75%{transform:translateX(-20px)}
+  100%{transform:translateX(0)}
+}
 
-        .box {
-            background: rgba(255,255,255,0.35);
-            padding: 30px;
-            border-radius: 20px;
-            border: 3px solid white;
-            backdrop-filter: blur(5px);
-            width: 300px;
-            text-align: center;
-        }
-    </style>
+.quiz-container{
+  max-width:900px;
+  margin:auto;
+  padding:80px 20px 220px;
+  text-align:center;
+}
+
+.question-box{
+  background:rgba(0,0,0,.6);
+  padding:22px;
+  border-radius:25px;
+}
+
+.image-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin:12px 0;
+}
+
+.question-image{
+  width:120px;
+  border-radius:12px;
+  display:none;
+  cursor:pointer;
+}
+
+.dino{ width:180px; }
+
+.options{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.options button{
+  width:100%;
+  max-width:420px;
+  margin:10px 0;
+  padding:16px 20px;
+  min-height:72px;
+  border:none;
+  border-radius:26px;
+  background:#4fa3ff;
+  color:white;
+  font-size:19px;
+  cursor:pointer;
+}
+
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
+}
+
+.popup-content{
+  width:520px;
+  height:260px;
+  background:#1a2c4f;
+  padding:24px 30px;
+  border-radius:30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.popup-content img{
+  width:180px;
+}
+
+.popup-text-box p{
+  font-size:30px;
+  font-weight:bold;
+  text-align:left;
+  margin:0;
+}
+
+.btn-next{
+  position:absolute;
+  bottom:24px;
+  right:30px;
+  padding:12px 26px;
+  border:none;
+  border-radius:20px;
+  background:#4caf50;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.result{
+  display:none;
+  background:rgba(0,0,0,.7);
+  padding:34px;
+  border-radius:26px;
+}
+
+.stars{ font-size:36px; }
+
+.btn-back{
+  margin-top:20px;
+  padding:14px 30px;
+  border:none;
+  border-radius:22px;
+  background:#ff9800;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
 
-    <a class="back" href="dashboard-guru.html">← Kembali</a>
+<img src="awan-gelap.png" class="cloud left">
+<img src="awan-gelap.png" class="cloud right">
 
-    <div class="box">
-        <h1>Petualangan Huruf</h1>
-        <p>Tempat materi belajar huruf anak.</p>
+<div class="quiz-container">
+
+  <div class="question-box">
+    <h2 id="question"></h2>
+
+    <div class="image-row">
+      <img id="questionImage" class="question-image">
+      <img id="secondImage" class="question-image">
+      <img src="dino-normal.png" class="dino">
     </div>
+
+    <div id="options" class="options"></div>
+  </div>
+
+  <div class="result" id="result">
+    <div id="stars" class="stars"></div>
+    <img id="finalDino" class="dino">
+    <h2 id="scoreText"></h2>
+
+    <button class="btn-back" onclick="window.location.href='dashboard-guru.html'">
+      Kembali ke Dashboard
+    </button>
+  </div>
+
+</div>
+
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <img id="popupDino">
+    <div class="popup-text-box">
+      <p id="popupText"></p>
+    </div>
+    <button class="btn-next" onclick="nextQuestion()">Lanjutkan</button>
+  </div>
+</div>
+
+<!-- AUDIO -->
+<audio id="soundKucing" src="suara-kucing.mp3"></audio>
+<audio id="soundBenar" src="benar.mp3"></audio>
+<audio id="soundSalah" src="salah.mp3"></audio>
+
+<script>
+// ==========================
+// DATA QUIZ (AMAN, TIDAK NGURANGIN ISI)
+// ==========================
+const defaultQuestions = [
+ {q:"Huruf apa setelah JKL?",options:["GHI","MNO","PQR","DEF"],answer:1},
+ {
+  q:"Apa makna yang bisa diambil dari cerita Mimi si ulat?",
+  options:[
+   "Jangan bersabar karena tidak akan membuahkan hasil",
+   "Menyerahlah jika sudah lelah",
+   "Kesabaran dan ketekunan akan membawa kita ke mimpi",
+   "Tekun perlu tapi sabar tidak perlu"
+  ],
+  answer:2
+ },
+ {q:"Gambar apakah ini?",image:"kucing.png",options:["Kucing","Beruang","Kelinci","Srigala"],answer:0},
+ {q:"Apa yang berbeda dari kedua benda berikut?",image:"kaca-bulat.png",options:["Bentuk","Warna","Tidak Ada","Fungsi"],answer:0},
+ {
+  q:"Kegiatan apa yang dilakukan berikut ini?",
+  image:"ibu-memasak.png",
+  options:[
+   "Ibu sedang mencuci baju",
+   "Ibu sedang merapihkan pakaian",
+   "Ibu sedang memasak",
+   "Semuanya salah"
+  ],
+  answer:2
+ }
+];
+
+if(!localStorage.getItem("quizData")){
+  localStorage.setItem("quizData", JSON.stringify(defaultQuestions));
+}
+
+const questions = JSON.parse(localStorage.getItem("quizData"));
+
+let index=0,score=0;
+const qEl=document.getElementById("question");
+const optEl=document.getElementById("options");
+const img1=document.getElementById("questionImage");
+const img2=document.getElementById("secondImage");
+const popup=document.getElementById("popup");
+const popupText=document.getElementById("popupText");
+const popupDino=document.getElementById("popupDino");
+
+const soundKucing=document.getElementById("soundKucing");
+const soundBenar=document.getElementById("soundBenar");
+const soundSalah=document.getElementById("soundSalah");
+
+function loadQuestion(){
+ const q=questions[index];
+ qEl.innerText=q.q;
+ optEl.innerHTML="";
+ img1.style.display="none";
+ img2.style.display="none";
+
+ if(q.image){
+  img1.src=q.image;
+  img1.style.display="block";
+
+  if(q.image==="kaca-bulat.png"){
+    img2.src="kaca-oval.png";
+    img2.style.display="block";
+  }
+
+  img1.onclick=()=>{
+    if(q.image==="kucing.png"){
+      soundKucing.currentTime=0;
+      soundKucing.play();
+    }
+  };
+ }
+
+ q.options.forEach((o,i)=>{
+  const b=document.createElement("button");
+  b.innerText=o;
+  b.onclick=()=>checkAnswer(i);
+  optEl.appendChild(b);
+ });
+}
+
+function checkAnswer(i){
+ popup.style.display="flex";
+
+ if(i===questions[index].answer){
+  score++;
+  popupDino.src="dino-senang.png";
+  popupText.innerText="Teman Mimo sangat pintar!";
+  soundBenar.currentTime=0;
+  soundBenar.play();
+ }else{
+  popupDino.src="dino-sedih.png";
+  popupText.innerText="Jawabanmu salah, teman Mimo";
+  soundSalah.currentTime=0;
+  soundSalah.play();
+ }
+}
+
+function nextQuestion(){
+ popup.style.display="none";
+ index++;
+ if(index<questions.length) loadQuestion();
+ else showResult();
+}
+
+function showResult(){
+ document.querySelector(".question-box").style.display="none";
+ document.getElementById("result").style.display="block";
+ document.getElementById("stars").innerText="⭐".repeat(score);
+
+ const fd=document.getElementById("finalDino");
+ fd.src =
+  score===5?"dino-senang.png":
+  score===4?"dino-jempol.png":
+  score===3?"dino-datar.png":
+  score===2?"dino-sedih.png":
+  "dino-menangis.png";
+
+ document.getElementById("scoreText").innerText=`Skor kamu: ${score} dari ${questions.length}`;
+}
+
+loadQuestion();
+</script>
 
 </body>
 </html>

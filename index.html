@@ -8,181 +8,176 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            margin: 0;
-            font-family: 'Rubik Bubbles', cursive;
-            background: linear-gradient(180deg, #CFE7FF 0%, #A7D3FF 40%, #87C3FF 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            color: white;
+        *{
+            font-family:'Rubik Bubbles', cursive;
+            margin:0;
+            padding:0;
         }
-
-        .wrapper {
-            position: relative;
-            width: 360px;
-            display: flex;
-            justify-content: center;
+        body{
+            background:linear-gradient(180deg,#CFE7FF 0%,#A7D3FF 40%,#87C3FF 100%);
+            height:100vh;
+            overflow:hidden;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            color:white;
         }
-
-        .wrapper img.dino {
-            width: 85%;
-            display: block;
-            margin: 0 auto;
-            user-select: none;
-            position: relative;
-            z-index: 3;
+        .wrapper{
+            position:relative;
+            width:360px;
+            display:flex;
+            justify-content:center;
+            z-index:5;
         }
-
-        .bird-left, .bird-right {
-            position: absolute;
-            width: 200px;
-            opacity: 0.95;
-            z-index: 1;
-            will-change: transform;
+        .wrapper img.dino{
+            width:85%;
+            user-select:none;
+            z-index:7;
         }
-        .bird-left {
-            left: -115px;
-            top: 6%;
-            animation: flyLeft 4s ease-in-out infinite;
+        .bird-left,.bird-right{
+            position:absolute;
+            width:260px;
+            z-index:3;
         }
-        .bird-right {
-            right: -115px;
-            top: -2%;
-            animation: flyRight 4s ease-in-out infinite;
+        .bird-left{
+            left:-145px;
+            top:4%;
+            animation:flyLeft 4s ease-in-out infinite;
         }
-
-        @keyframes flyLeft {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-14px); }
-            100% { transform: translateY(0); }
+        .bird-right{
+            right:-145px;
+            top:-6%;
+            animation:flyRight 4s ease-in-out infinite;
         }
-        @keyframes flyRight {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(12px); }
-            100% { transform: translateY(0); }
+        @keyframes flyLeft{
+            0%{transform:translateY(0)}
+            50%{transform:translateY(-14px)}
+            100%{transform:translateY(0)}
         }
-
-        .form-box {
-            position: absolute;
-            top: 12%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 18px;
-            z-index: 4;
+        @keyframes flyRight{
+            0%{transform:translateY(0)}
+            50%{transform:translateY(12px)}
+            100%{transform:translateY(0)}
         }
-
-        h1 { margin: 0; font-size: 40px; }
-
-        .input-row { display: flex; gap: 12px; }
-
-        input {
-            padding: 12px;
-            width: 120px;
-            background: rgba(40, 110, 200, 0.35);
-            border: 2px solid rgba(255,255,255,0.65);
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            text-align: center;
-            backdrop-filter: blur(5px);
+        .form-box{
+            position:absolute;
+            top:12%;
+            width:100%;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:18px;
+            z-index:10;
         }
-
-        ::placeholder { color: rgba(255,255,255,0.85); }
-
-        button {
-            padding: 12px;
-            width: 150px;
-            border: none;
-            border-radius: 14px;
-            background: rgba(255,255,255,0.35);
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.25s;
+        h1{ font-size:40px; }
+        .input-row{ display:flex; gap:12px; }
+        input{
+            padding:12px;
+            width:120px;
+            background:rgba(40,110,200,0.35);
+            border:2px solid rgba(255,255,255,0.65);
+            border-radius:12px;
+            color:white;
+            font-size:16px;
+            text-align:center;
+            outline:none;
         }
-        button:hover { background: rgba(255,255,255,0.55); }
-
-        .awan-bawah {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: auto;
-            z-index: 0;
-            overflow: hidden;
-            animation: cloudScroll 35s linear infinite;
+        ::placeholder{ color:rgba(255,255,255,0.85); }
+        button{
+            padding:12px;
+            width:150px;
+            border:none;
+            border-radius:14px;
+            background:rgba(255,255,255,0.35);
+            color:white;
+            font-size:18px;
+            cursor:pointer;
         }
-
-        .awan-bawah img {
-            width: 50%;
-            height: auto;
-            opacity: 0.9;
-            float: left;
+        button:hover{
+            background:rgba(255,255,255,0.55);
         }
-
-        @keyframes cloudScroll {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
+        .awan-container{
+            position:fixed;
+            bottom:-20px;
+            left:0;
+            width:260%;
+            height:540px;
+            display:flex;
+            z-index:1;
+            animation:cloudSlide 35s linear infinite;
         }
-
-        @media (max-width: 420px) {
-            .wrapper { width: 300px; }
-            .bird-left, .bird-right { width: 140px; left: -80px; right: -80px; }
-            .awan-bawah { bottom: 0; }
-            .form-box { top: 10%; }
-            input { width: 100px; font-size: 15px; }
-            button { width: 140px; font-size: 16px; }
+        .awan-container img{
+            width:200%;
+            height:160%;
+            object-fit:contain;
+            pointer-events:none;
+        }
+        @keyframes cloudSlide{
+            from{transform:translateX(0)}
+            to{transform:translateX(-33%)}
         }
     </style>
 </head>
 
 <body>
 
-    <div class="wrapper">
-        <img src="bird-left.png" class="bird-left">
-        <img src="bird-right.png" class="bird-right">
+<div class="wrapper">
+    <img src="bird-left.png" class="bird-left">
+    <img src="bird-right.png" class="bird-right">
+    <img src="dino.png" class="dino">
 
-        <img src="dino.png" class="dino">
-
-        <div class="form-box">
-            <h1>Login</h1>
-            <div class="input-row">
-                <input id="username" type="text" placeholder="Username" required>
-                <input id="password" type="password" placeholder="Password" required>
-            </div>
-            <button onclick="login()">Login</button>
+    <div class="form-box">
+        <h1>Login</h1>
+        <div class="input-row">
+            <input id="username" type="text" placeholder="Email">
+            <input id="password" type="password" placeholder="Password">
         </div>
+        <button onclick="login()">Login</button>
     </div>
+</div>
 
-    <div class="awan-bawah">
-        <img src="awan.png">
-        <img src="awan.png">
-    </div>
+<div class="awan-container">
+    <img src="awan.png"><img src="awan.png"><img src="awan.png">
+    <img src="awan.png"><img src="awan.png"><img src="awan.png">
+</div>
 
-    <audio src="lagu.mp3" autoplay loop hidden></audio>
+<audio src="lagu.mp3" autoplay loop hidden></audio>
 
-    <script>
-        function login() {
-            const u = document.getElementById("username").value.trim().toLowerCase();
-            const p = document.getElementById("password").value.trim();
+<script>
+function login(){
+    const email = document.getElementById("username").value.trim().toLowerCase();
+    const pass  = document.getElementById("password").value.trim();
 
-            if (u === "guru" && p === "guru123") {
-                window.location.href = "dashboard-guru.html";
-            }
-            else if (u === "admin" && p === "admin123") {
-                window.location.href = "dashboard-admin.html";
-            }
-            else {
-                alert("Username atau password salah!");
-            }
-        }
-    </script>
+    // ===== ADMIN =====
+    if(email === "admin@mimo.com" && pass === "adminmimo111"){
+        window.location.href = "dashboard-admin.html";
+        return;
+    }
+
+    // ===== GURU =====
+    const accounts = JSON.parse(localStorage.getItem("guruAccounts")) || [];
+
+    const guru = accounts.find(g =>
+        g.email.toLowerCase() === email &&
+        g.password === pass
+    );
+
+    if(!guru){
+        alert("Akun tidak ditemukan atau password salah");
+        return;
+    }
+
+    // ❌ AKUN DIHAPUS / NONAKTIF
+    if(guru.aktif === false){
+        alert("Akun guru ini sudah dihapus / dinonaktifkan oleh admin");
+        return;
+    }
+
+    // ✅ LOGIN BERHASIL
+    localStorage.setItem("loginGuru", JSON.stringify(guru));
+    window.location.href = "dashboard-guru.html";
+}
+</script>
 
 </body>
 </html>

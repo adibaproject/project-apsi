@@ -1,219 +1,223 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard Guru</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Panduan Guru</title>
 
   <style>
-    :root{
-      --sun-size: 160px;
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background:
+        url("tanah.png") bottom center no-repeat,
+        linear-gradient(#cfe9ff, #eaf6ff);
+      background-size:
+        100% auto,
+        cover;
     }
 
-    body{
-      margin:0;
-      font-family: 'Rubik Bubbles', cursive;
-      background: linear-gradient(180deg,#CFE7FF 0%,#A7D3FF 40%,#87C3FF 100%);
-      height:100vh;
-      overflow:hidden;
-    }
-
-    a { text-decoration:none !important; }
-
-    .back-btn{
-      position:absolute;
-      top:12px;
-      right:14px;
-      z-index:40;
-      background:rgba(0,0,0,0.35);
-      padding:8px 16px;
-      border-radius:10px;
-      color:white;
-      font-size:14px;
-      backdrop-filter:blur(3px);
-      transition:.25s;
-    }
-    .back-btn:hover{ background:rgba(0,0,0,0.55); transform:scale(1.05); }
-
-    /* AWAN BERGERAK KE KIRI */
-    @keyframes cloudMoveLeft {
-      0%   { transform: translateX(0) var(--flip); }
-      100% { transform: translateX(-160px) var(--flip); }
-    }
-
-    .awan-top{
-      position:absolute;
-      top:6px;
-      width:180px;
-      z-index:5;
-      animation: cloudMoveLeft 12s linear infinite;
-    }
-
-    .awan-left{
-      left:8px;
-      --flip: scaleX(1);
-    }
-
-    .awan-right{
-      right:8px;
-      --flip: scaleX(-1);
-    }
-
-    /* MATAHARI */
-    .sun {
+    /* ===== Awan ===== */
+    .cloud {
       position: absolute;
-      top: 8%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: var(--sun-size);
-      height: var(--sun-size);
-      z-index:8;
-      pointer-events: none;
-      filter: drop-shadow(0 8px 20px rgba(255,180,0,0.25));
-      animation: sunPulse 4s ease-in-out infinite;
+      top: 40px;
+      width: 120px;
+      z-index: 1;
+      opacity: 0.9;
+    }
+    .cloud.left { left: 40px; }
+    .cloud.right { right: 40px; }
+
+    /* ===== Tombol Kembali ===== */
+    .btn-back {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: rgba(90,90,90,0.85); /* abu lebih tua */
+      border-radius: 20px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-back:hover {
+      transform: scale(1.05);
+    }
+    .btn-back:active {
+      transform: scale(1.1);
+      box-shadow: 0 6px 18px rgba(0,0,0,.3);
     }
 
-    @keyframes sunPulse {
-      0%   { transform: translateX(-50%) scale(1); opacity: .98; }
-      50%  { transform: translateX(-50%) scale(1.06); opacity: 1; }
-      100% { transform: translateX(-50%) scale(1); opacity: .98; }
+    /* ===== Container ===== */
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 90px 30px 220px;
+      position: relative;
+      z-index: 2;
     }
 
-    /* DINO */
-    .dino-mid{
-      position:absolute;
-      bottom:160px;
-      left:50%;
-      transform:translateX(-50%);
-      width:300px;
-      z-index:20;
-      pointer-events:none;
+    /* ===== Guide Section ===== */
+    .guide-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 40px;
     }
 
-    /* CONTAINER KIRI KANAN */
-    .side-container{
-      position:absolute;
-      top:52%;
-      width:40%;
-      z-index:30;
-    }
-    .left-side{ left:4%; }
-    .right-side{ right:4%; }
-
-    .card{
-      width:100%;
-      height:70px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      margin-bottom:14px;
-      background:rgba(0,140,80,0.35);
-      border-radius:16px;
-      color:white;
-      font-size:22px;
-      backdrop-filter:blur(4px);
-      transition:.25s;
-      cursor:pointer;
-    }
-    .card:hover{
-      transform:translateY(-6px);
-      background:rgba(0,140,80,0.55);
+    .character img {
+      width: 160px;
     }
 
-    /* TANAH */
-    .tanah{
-      position:absolute;
-      bottom:0;
-      left:0;
-      width:100%;
-      height:160px;
-      background: url("tanah.png") center bottom/cover no-repeat;
-      z-index:10;
+    /* ===== Bubble ===== */
+    .bubble {
+      background: #7bc8d6;
+      color: #ffffff;
+      padding: 22px;
+      border-radius: 25px;
+      max-width: 560px;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    /* WELCOME BOX */
-    .welcome-box{
-      position:absolute;
-      right:16px;
-      bottom:16px;
-      display:flex;
-      align-items:center;
-      background:rgba(255,255,255,0.55);
-      padding:10px 16px;
-      border-radius:14px;
-      backdrop-filter:blur(4px);
-      z-index:50;
+    .bubble::after {
+      content: "";
+      position: absolute;
+      left: -20px;
+      top: 45px;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-right: 20px solid #7bc8d6;
     }
 
-    .welcome-box img{
-      width:55px;
-      height:auto;
-      margin-right:10px;
+    .bubble p {
+      margin: 0 0 12px;
+      line-height: 1.6;
+      font-size: 15px;
     }
 
-    .welcome-text{
-      font-size:18px;
-      color:#2b2b2b;
+    /* ===== PDF Section ===== */
+    .pdf-section {
+      background: #ffffff;
+      padding: 22px;
+      border-radius: 22px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
     }
 
-    /* RESPONSIVE */
-    @media(max-width:720px){
-      :root{ --sun-size:120px; }
-      .dino-mid{ width:240px; bottom:150px; }
-      .side-container{ top:56%; width:44%; }
-      .card{ font-size:18px; height:64px; }
-      .awan-top{ width:140px; }
-      .welcome-box img{ width:45px; }
-      .welcome-text{ font-size:16px; }
+    .pdf-section h2 {
+      text-align: center;
+      margin-bottom: 18px;
     }
 
-    @media(max-width:420px){
-      :root{ --sun-size:100px; }
-      .dino-mid{ width:200px; bottom:140px; }
-      .side-container{ top:60%; width:46%; }
-      .card{ font-size:16px; height:60px; }
-      .back-btn{ font-size:13px; padding:7px 12px; }
-      .welcome-box img{ width:40px; }
-      .welcome-text{ font-size:15px; }
+    iframe {
+      border-radius: 14px;
+      border: none;
+      background: #f4f6fb;
+    }
+
+    .btn-download {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 12px 26px;
+      background: #4caf50;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
 
-  <a href="index.html" class="back-btn">Kembali</a>
+  <!-- Awan -->
+  <img src="awan.png" class="cloud left">
+  <img src="awan.png" class="cloud right">
 
-  <!-- awan -->
-  <img src="awan-atas.png" class="awan-top awan-left" alt="awan kiri">
-  <img src="awan-atas.png" class="awan-top awan-right" alt="awan kanan">
+  <!-- Tombol Kembali -->
+  <a href="dashboard-guru.html" class="btn-back">Kembali</a>
 
-  <!-- matahari -->
-  <img src="sun.png" class="sun" alt="matahari">
+  <div class="container">
 
-  <!-- dino -->
-  <img src="dino-guru.png" class="dino-mid" alt="dino">
+    <!-- Bubble Panduan -->
+    <div class="guide-section">
+      <div class="character">
+        <img src="dino.png">
+      </div>
 
-  <!-- kiri -->
-  <div class="side-container left-side">
-    <a href="materi.html" class="card">Materi</a>
-    <a href="cerita.html" class="card">Cerita</a>
+      <div class="bubble" id="bubblePanduan">
+        <p>Halo Bu/Pak Guru 👋</p>
+        <p>
+          Di halaman ini, Mimo bakal bantu menjelasin
+          cara pakai aplikasi pembelajaran dengan mudah
+          dan menyenangkan.
+        </p>
+        <p>
+          Sebelum mulai belajar bareng siswa,
+          yuk dibaca dulu panduannya supaya
+          kegiatan di kelas bisa berjalan lancar ✨
+        </p>
+      </div>
+    </div>
+
+    <!-- PDF -->
+    <div class="pdf-section">
+      <h2>Panduan Penggunaan</h2>
+
+      <iframe
+        id="pdfPanduan"
+        src="panduan-guru.pdf"
+        width="100%"
+        height="520px">
+      </iframe>
+
+      <center>
+        <a
+          id="btnDownload"
+          href="panduan-guru.pdf"
+          download
+          class="btn-download">
+          Download Panduan (PDF)
+        </a>
+      </center>
+    </div>
+
   </div>
 
-  <!-- kanan -->
-  <div class="side-container right-side">
-    <a href="quiz.html" class="card">Quiz</a>
-    <a href="panduan.html" class="card">Panduan</a>
-  </div>
+  <!-- ===== SCRIPT SINKRON ADMIN ===== -->
+  <script>
+    const KEY_PDF = "panduan_pdf";
+    const KEY_TAMBAHAN = "panduan_tambahan";
 
-  <!-- welcome -->
-  <div class="welcome-box">
-    <img src="dino-guru.png" alt="dino">
-    <div class="welcome-text">Selamat datang..</div>
-  </div>
+    const pdfIframe = document.getElementById("pdfPanduan");
+    const btnDownload = document.getElementById("btnDownload");
+    const bubble = document.getElementById("bubblePanduan");
 
-  <!-- tanah -->
-  <div class="tanah"></div>
+    if (!localStorage.getItem(KEY_PDF)) {
+      localStorage.setItem(KEY_PDF, "panduan-guru.pdf");
+    }
+
+    const tambahanTeks = localStorage.getItem(KEY_TAMBAHAN);
+    if (tambahanTeks) {
+      const p = document.createElement("p");
+      p.innerText = tambahanTeks;
+      bubble.appendChild(p);
+    }
+
+    const pdfAktif = localStorage.getItem(KEY_PDF);
+
+    if (pdfAktif === "hapus") {
+      pdfIframe.style.display = "none";
+      btnDownload.style.display = "none";
+    } else {
+      pdfIframe.src = pdfAktif;
+      btnDownload.href = pdfAktif;
+    }
+  </script>
 
 </body>
 </html>

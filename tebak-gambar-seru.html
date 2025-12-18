@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tebak Gambar Seru</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  background:linear-gradient(180deg,#CFE7FF,#87C3FF);
+  font-family:'Rubik Bubbles', cursive;
+  color:#fff;
+}
+
+/* ===== AWAN ===== */
+.awan{
+  position:absolute;
+  top:30px;
+  width:260px;
+  animation:awan 6s ease-in-out infinite;
+  opacity:.9;
+}
+.awan.kiri{ left:40px; }
+.awan.kanan{ right:40px; animation-delay:3s; }
+@keyframes awan{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-12px); }
+}
+
+/* ===== TANAH ===== */
+.tanah{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:160px;
+  background:url('tanah.png') no-repeat center bottom;
+  background-size:100% 100%;
+  z-index:1;
+}
+
+/* ===== SCENE ===== */
+.scene{ position:absolute; inset:0; display:none; }
+.scene.active{ display:block; }
+
+/* ===== AREA ===== */
+.area{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:80px;
+  display:flex;
+  align-items:flex-end;
+  gap:40px;
+  z-index:3;
+}
+
+/* ===== DINO ===== */
+.dino{ width:230px; animation:float 4s ease-in-out infinite; }
+@keyframes float{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-16px); }
+}
+
+/* ===== KUCING ===== */
+.kucing{ width:150px; filter:drop-shadow(0 6px 0 #2563eb); }
+
+/* ===== BUBBLE ===== */
+.bubble{
+  position:absolute;
+  bottom:320px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#fff;
+  color:#333;
+  padding:16px 22px;
+  border-radius:20px;
+  font-size:18px;
+  max-width:320px;
+  text-align:center;
+  z-index:4;
+}
+
+/* ===== BUTTON ===== */
+.btn{
+  position:absolute;
+  bottom:220px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:12px 26px;
+  background:rgba(0,0,0,.4);
+  border-radius:16px;
+  cursor:pointer;
+  font-size:20px;
+  z-index:5;
+}
+
+/* ===== TIMER ===== */
+.timer{
+  position:absolute;
+  top:20px;
+  width:100%;
+  text-align:center;
+  font-size:96px;
+  font-weight:bold;
+  text-shadow:0 4px 0 #1e40af,0 8px 18px rgba(0,0,0,.35);
+  z-index:6;
+}
+
+/* ===== RESULT ===== */
+.result{
+  position:absolute;
+  top:120px;
+  width:100%;
+  text-align:center;
+  font-size:72px;
+  font-weight:bold;
+  display:none;
+  z-index:6;
+  text-shadow:0 4px 0 #2563eb,0 8px 20px rgba(37,99,235,.6);
+}
+
+/* ===== KEMBALI ===== */
+.kembali{
+  position:absolute;
+  top:20px;
+  right:24px;
+  padding:10px 22px;
+  background:rgba(107,114,128,.9);
+  border-radius:14px;
+  font-size:16px;
+  cursor:pointer;
+  display:none;
+  z-index:10;
+  color:white;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.kembali:hover{
+  transform:scale(1.06);
+}
+.kembali:active{
+  transform:scale(1.1);
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+
+/* ===== BALON ===== */
+.balon{
+  position:absolute;
+  bottom:0;
+  width:30px;
+  height:40px;
+  border-radius:50% 50% 45% 45%;
+  animation:naik 1.2s ease-out forwards;
+  z-index:8;
+}
+@keyframes naik{
+  0%{ transform:translateY(0); opacity:1; }
+  100%{ transform:translateY(-360px); opacity:0; }
+}
+</style>
+
+</head>
+<body>
+
+<img src="awan.png" class="awan kiri">
+<img src="awan.png" class="awan kanan">
+
+<div class="scene active" id="scene1">
+  <div class="bubble">Halo teman-teman,<br>tebak gambar bareng Mimo yuk!</div>
+  <div class="area"><img src="dino-guru.png" class="dino"></div>
+  <div class="btn" id="btnMulai">Lanjut</div>
+</div>
+
+<div class="scene" id="scene2">
+  <div class="bubble">Hewan apakah ini?</div>
+  <div class="area">
+    <img src="dino-guru.png" class="dino">
+    <img src="kucing.png" class="kucing">
+  </div>
+  <div class="timer" id="timer">10</div>
+  <div class="result" id="result">KUCING</div>
+</div>
+
+<div class="kembali" id="btnKembali">Kembali</div>
+
+<div class="tanah"></div>
+<audio id="audio"></audio>
+
+<script>
+let waktu = 10;
+let interval = null;
+let selesai = false;
+
+const btnMulai = document.getElementById('btnMulai');
+const btnKembali = document.getElementById('btnKembali');
+const scene1 = document.getElementById('scene1');
+const scene2 = document.getElementById('scene2');
+const timer = document.getElementById('timer');
+const result = document.getElementById('result');
+const audio = document.getElementById('audio');
+
+btnMulai.onclick = ()=>{
+  scene1.classList.remove('active');
+  scene2.classList.add('active');
+  mulai();
+};
+
+function mulai(){
+  clearInterval(interval);
+  interval = setInterval(()=>{
+    waktu--;
+    timer.innerText = waktu;
+
+    if(waktu <= 0 && !selesai){
+      selesai = true;
+      clearInterval(interval);
+
+      timer.style.display = 'none';
+      result.style.display = 'block';
+
+      audio.src = 'benar.mp3';
+      audio.play();
+
+      for(let i=0;i<30;i++){
+        const b = document.createElement('div');
+        b.className = 'balon';
+        b.style.left = Math.random()*100+'vw';
+        b.style.background = `hsl(${Math.random()*360},80%,65%)`;
+        document.body.appendChild(b);
+        setTimeout(()=>b.remove(),1200);
+      }
+
+      setTimeout(()=>{
+        btnKembali.style.display = 'block';
+      },500);
+    }
+  },1000);
+}
+
+btnKembali.onclick = ()=>{
+  location.replace('materi.html');
+};
+</script>
+
+</body>
+</html>

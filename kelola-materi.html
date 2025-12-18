@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Kelola Materi</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#f4f6fb}
+.container{padding:24px}
+h1{margin-bottom:16px}
+
+/* === TOMBOL KEMBALI === */
+.back-btn{
+  position:fixed;
+  top:16px;
+  right:16px;
+  background:#555;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:10px;
+  text-decoration:none;
+  font-size:14px;
+  transition:.2s;
+}
+.back-btn:hover{
+  background:#333;
+  transform:scale(1.05);
+}
+
+input,button{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  margin-right:6px;
+  margin-bottom:6px;
+}
+
+button{
+  background:#2f3e9e;
+  color:#fff;
+  border:none;
+  cursor:pointer
+}
+
+table{
+  width:100%;
+  margin-top:16px;
+  border-collapse:collapse;
+  background:#fff
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+  text-align:left
+}
+
+.btn-del{background:#e74c3c}
+.btn-edit{background:#f39c12}
+.btn-reset{background:#27ae60}
+</style>
+</head>
+
+<body>
+
+<!-- TOMBOL KEMBALI -->
+<a href="dashboard-admin.html" class="back-btn">Kembali</a>
+
+<div class="container">
+
+<h1>Kelola Materi (Judul & Suara)</h1>
+
+<input id="judul" placeholder="Judul Materi">
+<input id="suara" placeholder="nama-suara.mp3">
+<input id="link" placeholder="nama-halaman.html">
+
+<br>
+
+<button onclick="simpan()">Simpan</button>
+<button class="btn-reset" onclick="resetData()">Restore Default</button>
+
+<table>
+<thead>
+<tr>
+  <th>Judul</th>
+  <th>Suara</th>
+  <th>Link</th>
+  <th>Aksi</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+
+</div>
+
+<script>
+let editIndex = null;
+
+/* ===== DATA ASLI DARI materi.html ===== */
+const defaultMateri = [
+  {judul:'Petualangan Huruf', suara:'huruf.mp3', link:'petualangan-huruf.html'},
+  {judul:'Kata-kata Ajaib', suara:'kataajaib.mp3', link:'kata-kata-ajaib.html'},
+  {judul:'Kartu Kata Pintar', suara:'kartupintar.mp3', link:'kartu-kata-pintar.html'},
+  {judul:'Tebak Gambar Seru', suara:'tebak.mp3', link:'tebak-gambar-seru.html'}
+];
+
+if(!localStorage.getItem('materiData')){
+  localStorage.setItem('materiData', JSON.stringify(defaultMateri));
+}
+
+const getData = () =>
+  JSON.parse(localStorage.getItem('materiData'));
+
+const saveData = d =>
+  localStorage.setItem('materiData', JSON.stringify(d));
+
+function render(){
+  list.innerHTML='';
+  getData().forEach((m,i)=>{
+    list.innerHTML += `
+      <tr>
+        <td>${m.judul}</td>
+        <td>${m.suara}</td>
+        <td>${m.link}</td>
+        <td>
+          <button class="btn-edit" onclick="edit(${i})">Edit</button>
+          <button class="btn-del" onclick="hapus(${i})">Hapus</button>
+        </td>
+      </tr>`;
+  });
+}
+
+function simpan(){
+  const data = getData();
+  const obj = {
+    judul:judul.value,
+    suara:suara.value,
+    link:link.value
+  };
+
+  if(editIndex === null){
+    data.push(obj);
+  }else{
+    data[editIndex] = obj;
+    editIndex = null;
+  }
+
+  saveData(data);
+  judul.value='';
+  suara.value='';
+  link.value='';
+  render();
+}
+
+function edit(i){
+  const m = getData()[i];
+  judul.value = m.judul;
+  suara.value = m.suara;
+  link.value  = m.link;
+  editIndex = i;
+}
+
+function hapus(i){
+  const d = getData();
+  d.splice(i,1);
+  saveData(d);
+  render();
+}
+
+function resetData(){
+  if(confirm('Balikin ke materi awal?')){
+    saveData(defaultMateri);
+    render();
+  }
+}
+
+render();
+</script>
+</body>
+</html>

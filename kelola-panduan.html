@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kelola Panduan Guru</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:"Comic Sans MS", Arial, sans-serif;
+      background:#ffffff;
+      min-height:100vh;
+      padding:30px;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    /* TOMBOL KEMBALI */
+    .btn-back{
+      position:fixed;
+      top:20px;
+      right:20px;
+      padding:10px 18px;
+      background:rgba(0,0,0,0.55);
+      color:#fff;
+      text-decoration:none;
+      border-radius:10px;
+      font-weight:bold;
+      z-index:9999;
+      transition:transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-back:hover{
+      transform:scale(1.08);
+      background:rgba(0,0,0,0.7);
+    }
+
+    .box{
+      max-width:850px;
+      margin:auto;
+      background:#ffffff;
+      padding:25px;
+      border-radius:20px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    label{
+      font-weight:bold;
+      display:block;
+      margin-top:15px;
+      margin-bottom:6px;
+    }
+
+    textarea,input{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #ccc;
+      font-family:inherit;
+    }
+
+    textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    input[type="file"]{
+      padding:8px;
+    }
+
+    .btn{
+      margin-top:15px;
+      padding:12px 20px;
+      border:none;
+      border-radius:25px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .btn-save{
+      background:#4caf50;
+      color:#fff;
+    }
+
+    .btn-delete{
+      background:#f44336;
+      color:#fff;
+      margin-left:10px;
+    }
+
+    .status{
+      margin-top:15px;
+      padding:12px;
+      background:#f4f6fb;
+      border-radius:12px;
+      font-size:14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="dashboard-admin.html" class="btn-back">Kembali</a>
+
+  <h1>Kelola Panduan Guru</h1>
+
+  <div class="box">
+
+    <label>Teks Panduan Tambahan</label>
+    <textarea id="teksPanduan" placeholder="Teks ini akan ditambahkan ke panduan guru..."></textarea>
+
+    <div class="status" id="statusPDF">Memuat status PDF...</div>
+
+    <label>Upload PDF Panduan Baru</label>
+    <input type="file" id="filePDF" accept="application/pdf">
+
+    <button class="btn btn-save" onclick="simpanPanduan()">Simpan</button>
+    <button class="btn btn-delete" onclick="hapusPDF()">Hapus PDF Admin</button>
+
+  </div>
+
+  <script>
+    const KEY_PDF = "panduan_pdf";
+    const KEY_TAMBAHAN = "panduan_tambahan";
+
+    const teksInput = document.getElementById("teksPanduan");
+    const statusPDF = document.getElementById("statusPDF");
+    const fileInput = document.getElementById("filePDF");
+
+    teksInput.value = localStorage.getItem(KEY_TAMBAHAN) || "";
+
+    if (!localStorage.getItem(KEY_PDF)) {
+      localStorage.setItem(KEY_PDF, "panduan-guru.pdf");
+    }
+
+    const pdfValue = localStorage.getItem(KEY_PDF);
+
+    if (pdfValue === "panduan-guru.pdf") {
+      statusPDF.innerHTML =
+        "PDF aktif: <b>PDF Default Guru</b><br>" +
+        "File: panduan-guru.pdf";
+    } else {
+      statusPDF.innerHTML =
+        "PDF aktif: <b>PDF Admin</b><br>" +
+        "PDF bawaan guru tergantikan.";
+    }
+
+    function simpanPanduan(){
+      const teks = teksInput.value.trim();
+      const file = fileInput.files[0];
+
+      if (teks) {
+        localStorage.setItem(KEY_TAMBAHAN, teks);
+      } else {
+        localStorage.removeItem(KEY_TAMBAHAN);
+      }
+
+      if (file) {
+        if (file.type !== "application/pdf") {
+          alert("File harus PDF");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e){
+          localStorage.setItem(KEY_PDF, e.target.result);
+          alert("PDF admin berhasil disimpan");
+          location.reload();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert("Perubahan teks berhasil disimpan");
+      }
+    }
+
+    function hapusPDF(){
+      if (confirm("Kembalikan ke PDF default guru?")) {
+        localStorage.setItem(KEY_PDF, "panduan-guru.pdf");
+        alert("PDF kembali ke default guru");
+        location.reload();
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kata-kata Ajaib</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  background:linear-gradient(180deg,#CFE7FF,#87C3FF);
+  font-family:'Rubik Bubbles', cursive;
+}
+
+/* KEMBALI */
+.kembali{
+  position:absolute;
+  top:20px;
+  right:20px;
+  padding:8px 18px;
+  background:rgba(107,114,128,.85);
+  color:#fff;
+  border-radius:14px;
+  font-size:16px;
+  text-decoration:none;
+  z-index:10;
+  transition:transform .15s ease;
+}
+.kembali:hover{ transform:scale(1.05); }
+.kembali:active{ transform:scale(1.1); }
+
+/* AWAN */
+.awan{
+  position:absolute;
+  top:30px;
+  width:220px;
+  animation:awan 6s ease-in-out infinite;
+}
+.awan.kiri{ left:40px; }
+.awan.kanan{ right:40px; animation-delay:3s; }
+@keyframes awan{ 50%{ transform:translateY(-12px); } }
+
+/* TANAH */
+.tanah{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:160px;
+  background:url('tanah.png') no-repeat center bottom;
+  background-size:100% 100%;
+}
+
+/* KARAKTER */
+.mimo{
+  position:absolute;
+  bottom:80px;
+  left:20%;
+  width:220px;
+}
+
+/* BUBBLE */
+.bubble{
+  position:absolute;
+  bottom:320px;
+  left:20%;
+  transform:translateX(-50%);
+  background:#fff;
+  padding:16px 22px;
+  border-radius:20px;
+  font-size:18px;
+}
+
+/* OBJEK */
+.objek{
+  position:absolute;
+  bottom:300px;
+  left:50%;
+  transform:translateX(-50%);
+  width:140px;
+  transition:.6s ease;
+}
+.magic{
+  filter:brightness(1.3) drop-shadow(0 0 20px gold);
+  transform:translateX(-50%) scale(1.1);
+}
+
+/* HURUF */
+.huruf-area{
+  position:absolute;
+  bottom:220px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:16px;
+}
+.huruf{
+  width:60px;
+  height:60px;
+  background:#fff;
+  border-radius:12px;
+  font-size:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.huruf.benar{ background:#A7F3D0; }
+.huruf.salah{ background:#FCA5A5; }
+
+/* RESULT */
+.result{
+  position:absolute;
+  top:40px;
+  width:100%;
+  text-align:center;
+  font-size:42px;
+  color:#fff;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<a href="materi.html" class="kembali">Kembali</a>
+
+<img src="awan.png" class="awan kiri">
+<img src="awan.png" class="awan kanan">
+
+<div class="bubble" id="bubble">Ini buah apa ya teman-teman?</div>
+
+<img src="dino-guru.png" class="mimo">
+<img src="apel-merah.png" class="objek" id="objek">
+
+<div class="huruf-area" id="hurufArea"></div>
+<div class="result" id="result">BENAR</div>
+<div class="tanah"></div>
+
+<audio id="benar" src="benar.mp3"></audio>
+<audio id="salah" src="salah.mp3"></audio>
+
+<script>
+const tahap = [
+  { kata:['A','P','E','L'], img:'apel-merah.png', teks:'Ini buah apa ya teman-teman?' },
+  { kata:['W','A','R','N','A'], img:'apel-hijau.png', teks:'Warnanya apa ya teman-teman?' }
+];
+
+let tahapIndex = 0;
+let indexBenar = 0;
+let selesai = false;
+
+buatHuruf();
+
+function buatHuruf(){
+  hurufArea.innerHTML='';
+  indexBenar = 0;
+  bubble.innerHTML = tahap[tahapIndex].teks;
+
+  [...tahap[tahapIndex].kata].sort(()=>Math.random()-0.5).forEach(h=>{
+    const el=document.createElement('div');
+    el.className='huruf';
+    el.textContent=h;
+    el.onclick=()=>klikHuruf(el,h);
+    hurufArea.appendChild(el);
+  });
+}
+
+function klikHuruf(el,h){
+  if(selesai) return;
+
+  if(h === tahap[tahapIndex].kata[indexBenar]){
+    el.classList.add('benar');
+    indexBenar++;
+
+    if(indexBenar === tahap[tahapIndex].kata.length){
+      benar.play();
+      lanjut();
+    }
+  }else{
+    el.classList.add('salah');
+    salah.currentTime=0;
+    salah.play();
+    setTimeout(()=>el.classList.remove('salah'),400);
+  }
+}
+
+function lanjut(){
+  result.style.display='block';
+  objek.classList.add('magic');
+
+  setTimeout(()=>{
+    result.style.display='none';
+    objek.classList.remove('magic');
+
+    if(tahapIndex === 0){
+      tahapIndex = 1;
+      objek.src = tahap[1].img;
+      buatHuruf();
+    }else{
+      // 🔒 SELESAI TOTAL
+      selesai = true;
+      document.querySelectorAll('.huruf').forEach(h=>{
+        h.style.pointerEvents='none';
+      });
+    }
+  },900);
+}
+</script>
+
+</body>
+</html>

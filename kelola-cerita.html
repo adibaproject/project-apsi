@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Kelola Cerita</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f6fb;
+}
+.container{
+  padding:24px;
+  position:relative;
+}
+h1{margin-bottom:16px}
+
+/* tombol kembali */
+.back{
+  position:absolute;
+  top:24px;
+  right:24px;
+  text-decoration:none;
+  background:#444;
+  color:white;
+  padding:8px 14px;
+  border-radius:8px;
+  font-size:14px;
+}
+
+textarea,button{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  background:#2f3e9e;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+.btn-del{background:#e74c3c}
+.btn-edit{background:#f39c12}
+.btn-reset{background:#27ae60}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:16px;
+  background:white;
+}
+th,td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+  vertical-align:top;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<a href="dashboard-admin.html" class="back">Kembali</a>
+
+<h1>Kelola Cerita Mimi</h1>
+
+<textarea id="isi" placeholder="Isi cerita / scene"></textarea>
+
+<button onclick="simpan()">Simpan</button>
+<button class="btn-reset" onclick="restore()">Restore Default</button>
+
+<table>
+<thead>
+<tr>
+  <th>Scene</th>
+  <th>Isi Cerita</th>
+  <th>Aksi</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+
+</div>
+
+<script>
+let editIndex=null;
+
+/* ===== DATA ASLI CERITA ===== */
+const defaultCerita=[
+ {isi:"Di sebuah kebun apel, hiduplah seekor ulat bernama Mimi. Mimi sangat suka memakan daun-daun pohon apel."},
+ {isi:"Namun, Mimi sering merasa kesepian dan tidak memiliki teman."},
+ {isi:"Suatu hari, Mimi melihat kupu-kupu cantik terbang tinggi."},
+ {isi:"Bagaimana caranya agar aku bisa terbang? pikir Mimi."},
+ {isi:"Mimi pun mencari jawaban kepada pohon apel."},
+ {isi:"Pohon apel berkata: bersabarlah, semua ada waktunya."},
+ {isi:"Mimi membuat kepompong dan menunggu dengan sabar."},
+ {isi:"Hari demi hari berlalu, Mimi berubah menjadi kupu-kupu."},
+ {isi:"Pesan moral: Kesabaran membawa kita pada impian."}
+];
+
+if(!localStorage.getItem("ceritaData")){
+  localStorage.setItem("ceritaData",JSON.stringify(defaultCerita));
+}
+
+const getData=()=>JSON.parse(localStorage.getItem("ceritaData"));
+const saveData=d=>localStorage.setItem("ceritaData",JSON.stringify(d));
+
+function render(){
+  list.innerHTML="";
+  getData().forEach((c,i)=>{
+    list.innerHTML+=`
+      <tr>
+        <td>Scene ${i+1}</td>
+        <td>${c.isi}</td>
+        <td>
+          <button class="btn-edit" onclick="edit(${i})">Edit</button>
+          <button class="btn-del" onclick="hapus(${i})">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function simpan(){
+  const data=getData();
+  const obj={isi:isi.value};
+
+  if(!obj.isi.trim()) return alert("Isi cerita kosong");
+
+  if(editIndex===null){
+    data.push(obj);
+  }else{
+    data[editIndex]=obj;
+    editIndex=null;
+  }
+
+  saveData(data);
+  isi.value="";
+  render();
+}
+
+function edit(i){
+  isi.value=getData()[i].isi;
+  editIndex=i;
+}
+
+function hapus(i){
+  const d=getData();
+  d.splice(i,1);
+  saveData(d);
+  render();
+}
+
+function restore(){
+  if(confirm("Balikin ke cerita awal?")){
+    saveData(defaultCerita);
+    render();
+  }
+}
+
+render();
+</script>
+</body>
+</html>

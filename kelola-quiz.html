@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Kelola Quiz</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f6fb;
+}
+.container{padding:24px; position:relative}
+h1{margin-bottom:16px}
+
+.back{
+  position:absolute;
+  top:24px;
+  right:24px;
+  text-decoration:none;
+  background:#555;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:8px;
+  font-size:14px;
+}
+
+textarea,input,select,button{
+  width:100%;
+  padding:10px;
+  margin-bottom:8px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  background:#2f3e9e;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+.btn-del{background:#e74c3c}
+.btn-edit{background:#f39c12}
+.btn-reset{background:#27ae60}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:16px;
+  background:white;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+  vertical-align:top;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- KEMBALI KE DASHBOARD ADMIN -->
+<a href="dashboard-admin.html" class="back">Kembali</a>
+
+<h1>Kelola Quiz</h1>
+
+<textarea id="q" placeholder="Pertanyaan"></textarea>
+<input id="img" placeholder="Gambar (opsional)">
+<input id="o1" placeholder="Opsi A">
+<input id="o2" placeholder="Opsi B">
+<input id="o3" placeholder="Opsi C">
+<input id="o4" placeholder="Opsi D">
+
+<select id="ans">
+  <option value="0">Jawaban A</option>
+  <option value="1">Jawaban B</option>
+  <option value="2">Jawaban C</option>
+  <option value="3">Jawaban D</option>
+</select>
+
+<button onclick="simpan()">Simpan</button>
+<button class="btn-reset" onclick="restore()">Restore Default</button>
+
+<table>
+<thead>
+<tr>
+  <th>Pertanyaan</th>
+  <th>Opsi</th>
+  <th>Jawaban</th>
+  <th>Aksi</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+
+</div>
+
+<script>
+let editIndex = null;
+
+const defaultQuiz = [
+ {q:"Huruf apa setelah JKL?",options:["GHI","MNO","PQR","DEF"],answer:1},
+ {
+  q:"Apa makna yang bisa diambil dari cerita Mimi si ulat?",
+  options:[
+   "Jangan bersabar karena tidak akan membuahkan hasil",
+   "Menyerahlah jika sudah lelah",
+   "Kesabaran dan ketekunan akan membawa kita ke mimpi",
+   "Tekun perlu tapi sabar tidak perlu"
+  ],
+  answer:2
+ },
+ {q:"Gambar apakah ini?",image:"kucing.png",options:["Kucing","Beruang","Kelinci","Srigala"],answer:0},
+ {q:"Apa yang berbeda dari kedua benda berikut?",image:"kaca-bulat.png",options:["Bentuk","Warna","Tidak Ada","Fungsi"],answer:0},
+ {
+  q:"Kegiatan apa yang dilakukan berikut ini?",
+  image:"ibu-memasak.png",
+  options:[
+   "Ibu sedang mencuci baju",
+   "Ibu sedang merapihkan pakaian",
+   "Ibu sedang memasak",
+   "Semuanya salah"
+  ],
+  answer:2
+ }
+];
+
+if(!localStorage.getItem("quizData")){
+  localStorage.setItem("quizData", JSON.stringify(defaultQuiz));
+}
+
+const getData = () =>
+  JSON.parse(localStorage.getItem("quizData"));
+
+const saveData = d =>
+  localStorage.setItem("quizData", JSON.stringify(d));
+
+function render(){
+  list.innerHTML="";
+  getData().forEach((m,i)=>{
+    list.innerHTML+=`
+      <tr>
+        <td>${m.q}</td>
+        <td>${m.options.join("<br>")}</td>
+        <td>${m.options[m.answer]}</td>
+        <td>
+          <button class="btn-edit" onclick="edit(${i})">Edit</button>
+          <button class="btn-del" onclick="hapus(${i})">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function simpan(){
+  const data = getData();
+  const obj = {
+    q:q.value,
+    options:[o1.value,o2.value,o3.value,o4.value],
+    answer:Number(ans.value)
+  };
+  if(img.value) obj.image = img.value;
+
+  if(editIndex===null){
+    data.push(obj);
+  }else{
+    data[editIndex]=obj;
+    editIndex=null;
+  }
+
+  saveData(data);
+  q.value=o1.value=o2.value=o3.value=o4.value=img.value="";
+  render();
+}
+
+function edit(i){
+  const m=getData()[i];
+  q.value=m.q;
+  o1.value=m.options[0];
+  o2.value=m.options[1];
+  o3.value=m.options[2];
+  o4.value=m.options[3];
+  ans.value=m.answer;
+  img.value=m.image||"";
+  editIndex=i;
+}
+
+function hapus(i){
+  const d=getData();
+  d.splice(i,1);
+  saveData(d);
+  render();
+}
+
+function restore(){
+  if(confirm("Balikin ke soal awal?")){
+    saveData(defaultQuiz);
+    render();
+  }
+}
+
+render();
+</script>
+</body>
+</html>

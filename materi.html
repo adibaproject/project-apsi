@@ -8,136 +8,188 @@
 <link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
 
 <style>
-  body{
-    margin:0;
-    background: linear-gradient(180deg,#CFE7FF 0%,#A7D3FF 40%,#87C3FF 100%);
-    height:100vh;
-    overflow:hidden;
-    font-family:'Rubik Bubbles', cursive;
-  }
+body{
+  margin:0;
+  background: linear-gradient(180deg,#CFE7FF 0%,#A7D3FF 40%,#87C3FF 100%);
+  height:100vh;
+  overflow:hidden;
+  font-family:'Rubik Bubbles', cursive;
+}
 
-  a{text-decoration:none !important;}
+a{text-decoration:none !important;}
 
-  .back-btn{
-    position:absolute;
-    top:12px;
-    right:14px;
-    z-index:40;
-    background:rgba(0,0,0,0.35);
-    padding:8px 16px;
-    border-radius:10px;
-    color:white;
-    font-size:14px;
-    backdrop-filter:blur(3px);
-    transition:.25s;
-  }
-  .back-btn:hover{ background:rgba(0,0,0,0.55); transform:scale(1.05); }
+.back-btn{
+  position:absolute;
+  top:12px;
+  right:14px;
+  z-index:40;
+  background:rgba(0,0,0,0.35);
+  padding:8px 16px;
+  border-radius:10px;
+  color:white;
+  font-size:14px;
+  backdrop-filter:blur(3px);
+  transition:.25s;
+}
+.back-btn:hover{
+  background:rgba(0,0,0,0.55);
+  transform:scale(1.05);
+}
 
-  @keyframes cloudScroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-  }
+@keyframes cloudSlide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33%); }
+}
 
-  .awan-bawah {
-      position: fixed;
-      bottom: -40px;
-      left: 0;
-      width: 150%;
-      height: auto;
-      z-index: 0;
-      overflow: hidden;
-      animation: cloudScroll 38s linear infinite;
-      opacity: 0.9;
-  }
+.awan-container{
+  position:fixed;
+  bottom:-20px;
+  width:260%;
+  height:540px;
+  left:0;
+  display:flex;
+  z-index:1;
+  animation:cloudSlide 35s linear infinite;
+  pointer-events:none;
+}
 
-  .dino-tengah{
-    position:absolute;
-    top:30%;
-    left:50%;
-    transform:translateX(-50%);
-    width:400px;
-    z-index:12;
-  }
+.awan-container img{
+  width:200%;
+  height:160%;
+  object-fit:contain;
+  object-position:bottom;
+  opacity:.95;
+}
 
-  .grid{
-    position:absolute;
-    top:58%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:82%;
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap:16px;
-    z-index:20;
-  }
+.dino-tengah{
+  position:absolute;
+  top:30%;
+  left:50%;
+  transform:translateX(-50%);
+  width:400px;
+  z-index:12;
+}
 
-  .item{
-    background:rgba(0,140,80,0.35);
-    height:70px;
-    border-radius:18px;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:22px;
-    backdrop-filter:blur(4px);
-    transition:.25s;
-  }
-  .item:hover{
-    transform:translateY(-6px);
-    background:rgba(0,140,80,0.55);
-  }
+.grid{
+  position:absolute;
+  top:58%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:82%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  z-index:20;
+}
 
-  .welcome-box{
-    position:absolute;
-    right:16px;
-    bottom:16px;
-    display:flex;
-    align-items:center;
-    background:rgba(255,255,255,0.55);
-    padding:10px 16px;
-    border-radius:14px;
-    backdrop-filter:blur(4px);
-    z-index:50;
-  }
-  .welcome-box img{
-    width:50px;
-    margin-right:10px;
-  }
-  .welcome-text{
-    font-size:18px;
-    color:#202020;
-  }
+.item{
+  background:rgba(0,140,80,.35);
+  height:70px;
+  border-radius:18px;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:22px;
+  backdrop-filter:blur(4px);
+  transition:.25s;
+}
 
-  @media(max-width:420px){
-    .item{ font-size:17px; height:60px; }
-    .grid{ width:90%; grid-gap:12px; }
-    .dino-tengah{ width:210px; top:30%; }
-    .awan-bawah{ bottom:-30px; width:170%; }
-  }
+.item:hover{
+  transform:translateY(-6px);
+  background:rgba(0,140,80,.55);
+}
+
+.sound-btn{
+  position:fixed;
+  left:16px;
+  bottom:16px;
+  width:60px;
+  cursor:pointer;
+  z-index:60;
+  transition:.25s;
+}
+.sound-btn:hover{transform:scale(1.12);}
+
+@media(max-width:420px){
+  .item{font-size:17px;height:60px;}
+  .grid{width:90%;gap:12px;}
+  .dino-tengah{width:210px;}
+  .sound-btn{width:48px;}
+  .awan-container{height:320px;}
+}
 </style>
 </head>
 
 <body>
 
-<!-- FIXED: kembali ke dashboard-guru -->
 <a href="dashboard-guru.html" class="back-btn">Kembali</a>
 
-<img src="awan.png" class="awan-bawah">
+<!-- AWAN -->
+<div class="awan-container">
+  <img src="awan.png"><img src="awan.png"><img src="awan.png">
+  <img src="awan.png"><img src="awan.png"><img src="awan.png">
+</div>
 
+<!-- DINO -->
 <img src="dino-tengah.png" class="dino-tengah">
 
-<div class="grid">
-  <a href="petualangan-huruf.html" class="item">Petualangan Huruf</a>
-  <a href="kata-kata-ajaib.html" class="item">Kata-kata Ajaib</a>
-  <a href="kartu-kata-pintar.html" class="item">Kartu Kata Pintar</a>
-  <a href="tebak-gambar-seru.html" class="item">Tebak Gambar Seru</a>
-</div>
+<!-- GRID MATERI (DINAMIS) -->
+<div class="grid" id="materiGrid"></div>
 
-<div class="welcome-box">
-  <img src="dino-guru.png" alt="dino">
-  <div class="welcome-text">Selamat datang..</div>
-</div>
+<!-- SOUND BUTTON POJOK KIRI BAWAH -->
+<img src="sound.png" class="sound-btn" onclick="playSound()">
+
+<!-- AUDIO UMUM -->
+<audio id="soundPlayer" src="suaramateri.mp3"></audio>
+
+<script>
+/* ========= INIT DATA DEFAULT (KALAU BELUM ADA) ========= */
+const defaultMateri = [
+  {judul:'Petualangan Huruf', suara:'huruf.mp3', link:'petualangan-huruf.html'},
+  {judul:'Kata-kata Ajaib', suara:'kataajaib.mp3', link:'kata-kata-ajaib.html'},
+  {judul:'Kartu Kata Pintar', suara:'kartupintar.mp3', link:'kartu-kata-pintar.html'},
+  {judul:'Tebak Gambar Seru', suara:'tebak.mp3', link:'tebak-gambar-seru.html'}
+];
+
+if(!localStorage.getItem('materiData')){
+  localStorage.setItem('materiData', JSON.stringify(defaultMateri));
+}
+
+/* ========= RENDER MATERI ========= */
+const grid = document.getElementById('materiGrid');
+const data = JSON.parse(localStorage.getItem('materiData')) || [];
+
+let hoverAudio = new Audio();
+
+grid.innerHTML = '';
+
+data.forEach(m=>{
+  const a = document.createElement('a');
+  a.href = m.link;
+  a.className = 'item';
+  a.innerText = m.judul;
+
+  a.onmouseover = () => playMateriSound(m.suara);
+  a.onclick     = () => playMateriSound(m.suara);
+
+  grid.appendChild(a);
+});
+
+/* ========= AUDIO ========= */
+function playSound(){
+  const a=document.getElementById("soundPlayer");
+  a.currentTime=0;
+  a.play();
+}
+
+function playMateriSound(src){
+  hoverAudio.pause();
+  hoverAudio = new Audio(src);
+  hoverAudio.currentTime = 0;
+  hoverAudio.play();
+}
+</script>
 
 </body>
 </html>

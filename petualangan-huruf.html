@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Huruf</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  font-family:'Rubik Bubbles', cursive;
+  background: linear-gradient(180deg,#CFE7FF 0%,#A7D3FF 45%,#87C3FF 100%);
+}
+
+/* ===== TOMBOL KEMBALI ===== */
+.back-btn{
+  position:absolute;
+  top:14px;
+  right:16px;
+  padding:8px 16px;
+  background:rgba(0,0,0,.35);
+  color:white;
+  border-radius:12px;
+  text-decoration:none;
+  font-size:14px;
+  z-index:30;
+  transition:.25s;
+}
+.back-btn:hover{
+  background:rgba(0,0,0,.55);
+  transform:scale(1.05);
+}
+
+/* ===== ANIMASI ===== */
+@keyframes dinoFloat{
+  0%,100%{ transform:translate(-50%,0); }
+  50%{ transform:translate(-50%,-20px); }
+}
+@keyframes awanKedut{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-12px); }
+}
+
+/* ===== AWAN ===== */
+.awan-kiri,
+.awan-kanan{
+  position:absolute;
+  bottom:-40px;
+  width:520px;
+  z-index:2;
+  pointer-events:none;
+  animation:awanKedut 6s ease-in-out infinite;
+}
+.awan-kiri{ left:-80px; }
+.awan-kanan{
+  right:-80px;
+  transform:scaleX(-1);
+  animation-delay:3s;
+}
+
+/* ===== JUDUL ===== */
+.info{
+  position:absolute;
+  top:18px;
+  width:100%;
+  text-align:center;
+  font-size:26px;
+  color:white;
+  text-shadow:0 3px 6px rgba(0,0,0,.25);
+  z-index:5;
+}
+
+/* ===== HURUF ===== */
+.huruf-area{
+  position:absolute;
+  top:20%;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:48px;
+  z-index:6;
+}
+.huruf{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:rgba(0,150,90,.6);
+  color:white;
+  font-size:76px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  transition:.25s;
+}
+.huruf:hover{
+  transform:translateY(-12px) scale(1.06);
+  background:rgba(0,150,90,.85);
+}
+.huruf.hide{ display:none; }
+
+/* ===== DINO ===== */
+.dino{
+  position:absolute;
+  bottom:120px;
+  left:50%;
+  width:280px;
+  z-index:4;
+  animation:dinoFloat 4s ease-in-out infinite;
+}
+
+/* ===== NAV ===== */
+.nav-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:rgba(0,0,0,.35);
+  color:white;
+  font-size:28px;
+  border:none;
+  cursor:pointer;
+  z-index:10;
+}
+.prev{ left:20px; }
+.next{ right:20px; }
+
+/* ===== SOUND ===== */
+.sound-btn{
+  position:absolute;
+  left:16px;
+  bottom:16px;
+  width:56px;
+  cursor:pointer;
+  z-index:20;
+  transition:.25s;
+}
+.sound-btn:hover{ transform:scale(1.15); }
+
+/* RESPONSIVE */
+@media(max-width:420px){
+  .huruf{ width:110px;height:110px;font-size:56px; }
+  .dino{ width:200px; bottom:90px; }
+  .info{ font-size:20px; }
+  .awan-kiri,.awan-kanan{ width:360px; }
+  .sound-btn{ width:46px; }
+}
+</style>
+</head>
+
+<body>
+
+<a href="materi.html" class="back-btn">Kembali</a>
+
+<div class="info" id="infoHuruf">Huruf A - C</div>
+
+<img src="awan.png" class="awan-kiri">
+<img src="awan.png" class="awan-kanan">
+
+<div class="huruf-area">
+  <div class="huruf" id="h1" onclick="bunyi(0)"></div>
+  <div class="huruf" id="h2" onclick="bunyi(1)"></div>
+  <div class="huruf" id="h3" onclick="bunyi(2)"></div>
+</div>
+
+<img src="dino-senang.png" class="dino">
+
+<button class="nav-btn prev" onclick="prev()">‹</button>
+<button class="nav-btn next" onclick="next()">›</button>
+
+<img src="sound.png" class="sound-btn" onclick="toggleSound()">
+
+<audio id="audioHuruf"></audio>
+<audio id="bgSound" src="audiobg.mp3" loop></audio>
+
+<script>
+const huruf = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+let page = 0;
+let bgOn = false;
+
+function render(){
+  const start = page * 3;
+  const tampil = huruf.slice(start, start + 3);
+  const els = [h1,h2,h3];
+
+  els.forEach((el,i)=>{
+    if(tampil[i]){
+      el.innerText = tampil[i];
+      el.classList.remove('hide');
+    }else{
+      el.innerText = '';
+      el.classList.add('hide');
+    }
+  });
+
+  infoHuruf.innerText = `Huruf ${tampil[0]} - ${tampil[tampil.length-1]}`;
+}
+
+function next(){
+  if((page + 1) * 3 < huruf.length){
+    page++;
+    render();
+  }
+}
+function prev(){
+  if(page > 0){
+    page--;
+    render();
+  }
+}
+
+function bunyi(i){
+  const idx = page * 3 + i;
+  if(!huruf[idx]) return;
+  audioHuruf.src = `audio/${huruf[idx]}.mp3`;
+  audioHuruf.play();
+}
+
+function toggleSound(){
+  bgOn ? bgSound.pause() : bgSound.play();
+  bgOn = !bgOn;
+}
+
+render();
+</script>
+
+</body>
+</html>

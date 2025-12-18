@@ -1,22 +1,259 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard Admin</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header class="topbar">
-    <h1>Dashboard Admin</h1>
-    <a href="index.html">Logout</a>
-  </header>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin</title>
 
-  <main class="content">
-    <section class="card">
-      <h2>Manajemen Pengguna</h2>
-      <p>Contoh tabel/usulan fitur CRUD (bisa tampil statis untuk prototype).</p>
-    </section>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:'Inter', sans-serif;
+  background:#f4f6fb;
+}
+
+/* LAYOUT */
+.wrapper{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background:#2f3e9e;
+  color:#fff;
+  padding:24px 20px;
+}
+
+.sidebar h2{
+  margin:0 0 30px;
+  font-size:22px;
+  text-align:center;
+}
+
+.menu a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px;
+  margin-bottom:10px;
+  color:#fff;
+  text-decoration:none;
+  border-radius:10px;
+  font-weight:500;
+  transition:background .2s ease, transform .2s ease;
+}
+
+.menu a:hover{
+  background:rgba(255,255,255,0.18);
+  transform:translateX(4px);
+}
+
+.menu svg{
+  width:18px;
+  height:18px;
+  fill:#d1d5db; /* abu */
+}
+
+/* MAIN */
+.main{
+  flex:1;
+  padding:30px;
+}
+
+/* HEADER */
+.header{
+  background:#fff;
+  padding:22px 26px;
+  border-radius:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  margin-bottom:30px;
+}
+
+.header h1{margin:0}
+.header p{margin:6px 0 0;color:#666}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:22px;
+}
+
+.card{
+  background:#fff;
+  padding:22px;
+  border-radius:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.06);
+  transition:.25s ease;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 14px 28px rgba(0,0,0,0.1);
+}
+
+.card-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:6px;
+}
+
+.card-header svg{
+  width:22px;
+  height:22px;
+  fill:#9ca3af; /* abu */
+}
+
+.card h3{margin:0}
+.card p{
+  margin:0 0 14px;
+  color:#555;
+  font-size:14px;
+}
+
+.card button{
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  background:#2f3e9e;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.card button:hover{
+  transform:scale(1.06);
+}
+
+/* DINO */
+.dino{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  width:120px;
+  opacity:.9;
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>Admin Panel</h2>
+    <div class="menu">
+
+      <a href="dashboard-admin.html">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </a>
+
+      <a href="kelola-akun-guru.html">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
+        Akun Guru
+      </a>
+
+      <a href="kelola-materi.html">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
+        Materi
+      </a>
+
+      <a href="kelola-quiz.html">
+        <svg viewBox="0 0 24 24"><path d="M12 2l4 4-4 4-4-4 4-4zm0 10l4 4-4 4-4-4 4-4z"/></svg>
+        Quiz
+      </a>
+
+      <a href="kelola-cerita.html">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>
+        Cerita
+      </a>
+
+      <a href="kelola-panduan.html">
+        <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/></svg>
+        Panduan
+      </a>
+
+      <a href="index.html">
+        <svg viewBox="0 0 24 24"><path d="M16 17l5-5-5-5v3H9v4h7v3zM4 4h8v2H4v12h8v2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+        Logout
+      </a>
+
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="header">
+      <h1>Dashboard Admin</h1>
+      <p>Kelola seluruh konten dan akun guru dari sini</p>
+    </div>
+
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5z"/></svg>
+          <h3>Akun Guru</h3>
+        </div>
+        <p>Tambah, edit, hapus, dan restore akun guru.</p>
+        <a href="kelola-akun-guru.html"><button>Kelola Guru</button></a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4z"/></svg>
+          <h3>Materi</h3>
+        </div>
+        <p>Kelola materi yang dibuat oleh admin.</p>
+        <a href="kelola-materi.html"><button>Kelola Materi</button></a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24"><path d="M12 2l4 4-4 4-4-4z"/></svg>
+          <h3>Quiz</h3>
+        </div>
+        <p>Atur soal quiz dan penilaian.</p>
+        <a href="kelola-quiz.html"><button>Kelola Quiz</button></a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>
+          <h3>Cerita</h3>
+        </div>
+        <p>Kelola cerita pembelajaran interaktif.</p>
+        <a href="kelola-cerita.html"><button>Kelola Cerita</button></a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15z"/></svg>
+          <h3>Panduan</h3>
+        </div>
+        <p>Kelola panduan penggunaan guru.</p>
+        <a href="kelola-panduan.html"><button>Kelola Panduan</button></a>
+      </div>
+
+    </div>
+
   </main>
+</div>
+
+<!-- DINO -->
+<img src="dino1.png" class="dino" alt="dino">
+
 </body>
 </html>

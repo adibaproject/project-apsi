@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kartu Kata Pintar</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  background:linear-gradient(180deg,#0F172A,#1E293B);
+  font-family:'Rubik Bubbles', cursive;
+  overflow:hidden;
+}
+
+/* BACK */
+.back{
+  position:absolute;
+  top:20px;
+  right:20px;
+  padding:8px 18px;
+  background:rgba(255,255,255,.25);
+  color:#fff;
+  text-decoration:none;
+  border-radius:14px;
+  z-index:10;
+}
+
+/* AWAN */
+.awan{
+  position:absolute;
+  bottom:40px;
+  left:-300px;
+  width:300px;
+  animation:awanJalan 25s linear infinite;
+  opacity:.7;
+}
+@keyframes awanJalan{
+  to{ transform:translateX(120vw); }
+}
+
+/* DINO */
+.dino{
+  position:absolute;
+  bottom:60px;
+  left:9%;
+  width:220px;
+}
+
+/* POPUP */
+.popup{
+  position:absolute;
+  bottom:300px;
+  left:1%;
+  background:#fff;
+  padding:16px 22px;
+  border-radius:18px;
+  font-size:18px;
+}
+
+/* KARTU */
+.kartu-area{
+  position:absolute;
+  bottom:120px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:40px;
+}
+.kartu{
+  width:160px;
+  height:220px;
+  perspective:1000px;
+  cursor:pointer;
+}
+.kartu-inner{
+  width:100%;
+  height:100%;
+  transition:transform .8s;
+  transform-style:preserve-3d;
+}
+.kartu.buka .kartu-inner{
+  transform:rotateY(180deg);
+}
+.kartu-front,
+.kartu-back{
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.kartu-front{
+  background:repeating-linear-gradient(
+    45deg,#475569,#475569 10px,#334155 10px,#334155 20px
+  );
+  box-shadow:0 0 20px rgba(255,255,255,.25);
+}
+.kartu-back{
+  background:#fff;
+  transform:rotateY(180deg);
+}
+.kartu-back img{ width:120px; }
+
+/* KATA */
+.kata{
+  position:absolute;
+  top:80px;
+  width:100%;
+  text-align:center;
+  font-size:42px;
+  color:#fff;
+  display:none;
+}
+
+/* BINTANG */
+.bintang{
+  position:absolute;
+  color:#FDE68A;
+  animation:kilau 1s ease-out forwards;
+}
+@keyframes kilau{
+  to{ transform:translateY(-60px) scale(0); opacity:0; }
+}
+</style>
+</head>
+
+<body>
+
+<a href="materi.html" class="back">Kembali</a>
+
+<img src="awan-gelap.png" class="awan">
+<img src="dino-guru.png" class="dino">
+
+<div class="popup" id="popup">
+  Kita pilih kartu yuk teman-teman
+</div>
+
+<div class="kata" id="kata"></div>
+
+<div class="kartu-area">
+  <div class="kartu" onclick="pilihKartu(this,['Ibu','sedang','memasak'],'ibu.mp3')">
+    <div class="kartu-inner">
+      <div class="kartu-front"></div>
+      <div class="kartu-back"><img src="ibu-memasak.png"></div>
+    </div>
+  </div>
+
+  <div class="kartu" onclick="pilihKartu(this,['Anak','sedang','belajar'],'anak.mp3')">
+    <div class="kartu-inner">
+      <div class="kartu-front"></div>
+      <div class="kartu-back"><img src="anak-belajar.png"></div>
+    </div>
+  </div>
+
+  <div class="kartu" onclick="pilihKartu(this,['Ayah','sedang','bekerja'],'ayah.mp3')">
+    <div class="kartu-inner">
+      <div class="kartu-front"></div>
+      <div class="kartu-back"><img src="ayah-bekerja.png"></div>
+    </div>
+  </div>
+</div>
+
+<audio id="kataSound"></audio>
+
+<script>
+const popup = document.getElementById('popup');
+const kataEl = document.getElementById('kata');
+const kataSound = document.getElementById('kataSound');
+let timer = null;
+
+function reset(){
+  document.querySelectorAll('.kartu').forEach(k=>k.classList.remove('buka'));
+  kataEl.style.display='none';
+  popup.style.display='block';
+  clearTimeout(timer);
+}
+
+function pilihKartu(el,kata,file){
+  reset();
+
+  popup.style.display='none';
+  el.classList.add('buka');
+  kataEl.style.display='block';
+
+  tampilKata(0);
+
+  function tampilKata(i){
+    kataEl.textContent = kata[i];
+    kataSound.src = file;
+    kataSound.currentTime = 0;
+    kataSound.play();
+    bintangKecil();
+
+    if(i < kata.length-1){
+      timer = setTimeout(()=>tampilKata(i+1),3000);
+    }
+  }
+}
+
+function bintangKecil(){
+  for(let i=0;i<6;i++){
+    const s=document.createElement('div');
+    s.className='bintang';
+    s.textContent='✦';
+    s.style.left=Math.random()*100+'vw';
+    s.style.top=(120+Math.random()*60)+'px';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1000);
+  }
+}
+</script>
+
+</body>
+</html>

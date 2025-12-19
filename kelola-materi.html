@@ -40,7 +40,8 @@ button{
   background:#2f3e9e;
   color:#fff;
   border:none;
-  cursor:pointer
+  cursor:pointer;
+  font-weight:600;
 }
 
 table{
@@ -56,15 +57,23 @@ th,td{
   text-align:left
 }
 
+th{ background:#f0f2ff; }
+
 .btn-del{background:#e74c3c}
 .btn-edit{background:#f39c12}
 .btn-reset{background:#27ae60}
+.btn-permanent{background:#b33939}
+
+/* style untuk item yang dihapus */
+.deleted td{
+  color:#999;
+  text-decoration: line-through;
+}
 </style>
 </head>
 
 <body>
 
-<!-- TOMBOL KEMBALI -->
 <a href="dashboard-admin.html" class="back-btn">Kembali</a>
 
 <div class="container">
@@ -78,7 +87,6 @@ th,td{
 <br>
 
 <button onclick="simpan()">Simpan</button>
-<button class="btn-reset" onclick="resetData()">Restore Default</button>
 
 <table>
 <thead>
@@ -105,27 +113,30 @@ const defaultMateri = [
   {judul:'Tebak Gambar Seru', suara:'tebak.mp3', link:'tebak-gambar-seru.html'}
 ];
 
+/* Tambahkan properti aktif untuk soft delete */
 if(!localStorage.getItem('materiData')){
-  localStorage.setItem('materiData', JSON.stringify(defaultMateri));
+  const initData = defaultMateri.map(d => ({...d, aktif:true}));
+  localStorage.setItem('materiData', JSON.stringify(initData));
 }
 
-const getData = () =>
-  JSON.parse(localStorage.getItem('materiData'));
-
-const saveData = d =>
-  localStorage.setItem('materiData', JSON.stringify(d));
+const getData = () => JSON.parse(localStorage.getItem('materiData'));
+const saveData = d => localStorage.setItem('materiData', JSON.stringify(d));
 
 function render(){
   list.innerHTML='';
   getData().forEach((m,i)=>{
     list.innerHTML += `
-      <tr>
+      <tr class="${!m.aktif?'deleted':''}">
         <td>${m.judul}</td>
         <td>${m.suara}</td>
         <td>${m.link}</td>
         <td>
-          <button class="btn-edit" onclick="edit(${i})">Edit</button>
-          <button class="btn-del" onclick="hapus(${i})">Hapus</button>
+          <button class="btn-edit" onclick="edit(${i})" ${!m.aktif?'disabled':''}>Edit</button>
+          ${m.aktif
+            ? `<button class="btn-del" onclick="hapus(${i})">Hapus</button>`
+            : `<button class="btn-reset" onclick="restore(${i})">Restore</button>
+               <button class="btn-permanent" onclick="hapusPermanen(${i})">Hapus Permanen</button>`
+          }
         </td>
       </tr>`;
   });
@@ -136,7 +147,8 @@ function simpan(){
   const obj = {
     judul:judul.value,
     suara:suara.value,
-    link:link.value
+    link:link.value,
+    aktif:true
   };
 
   if(editIndex === null){
@@ -147,14 +159,13 @@ function simpan(){
   }
 
   saveData(data);
-  judul.value='';
-  suara.value='';
-  link.value='';
+  judul.value=''; suara.value=''; link.value='';
   render();
 }
 
 function edit(i){
   const m = getData()[i];
+  if(!m.aktif) return alert("Item ini sudah dihapus, restore dulu");
   judul.value = m.judul;
   suara.value = m.suara;
   link.value  = m.link;
@@ -163,14 +174,28 @@ function edit(i){
 
 function hapus(i){
   const d = getData();
-  d.splice(i,1);
+  d[i].aktif = false;
   saveData(d);
   render();
 }
 
-function resetData(){
-  if(confirm('Balikin ke materi awal?')){
-    saveData(defaultMateri);
+function restore(i){
+  const d = getData();
+  const defaultItem = defaultMateri.find(dft => dft.judul===d[i].judul);
+  if(defaultItem){
+    d[i] = {...defaultItem, aktif:true};
+  }else{
+    d[i].aktif = true; // jika custom item
+  }
+  saveData(d);
+  render();
+}
+
+function hapusPermanen(i){
+  if(confirm("Yakin hapus item ini PERMANEN?")) {
+    const d = getData();
+    d.splice(i,1);
+    saveData(d);
     render();
   }
 }

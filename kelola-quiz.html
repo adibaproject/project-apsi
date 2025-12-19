@@ -7,22 +7,30 @@
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   background:#f4f6fb;
 }
 .container{padding:24px; position:relative}
 h1{margin-bottom:16px}
 
+/* tombol kembali */
 .back{
   position:absolute;
   top:24px;
   right:24px;
   text-decoration:none;
-  background:#555;
-  color:#fff;
-  padding:8px 14px;
+  background:rgba(0,0,0,0.55);
+  color:white;
+  padding:10px 16px;
   border-radius:8px;
+  font-weight:bold;
   font-size:14px;
+  transition: transform 0.2s ease, background 0.2s ease;
+  z-index:9999;
+}
+.back:hover{
+  transform: scale(1.08);
+  background: rgba(0,0,0,0.7);
 }
 
 textarea,input,select,button{
@@ -38,11 +46,8 @@ button{
   color:white;
   border:none;
   cursor:pointer;
+  font-weight:600;
 }
-
-.btn-del{background:#e74c3c}
-.btn-edit{background:#f39c12}
-.btn-reset{background:#27ae60}
 
 table{
   width:100%;
@@ -55,14 +60,21 @@ th,td{
   padding:12px;
   border-bottom:1px solid #eee;
   vertical-align:top;
+  text-align:left;
 }
+
+th{ background:#f0f2ff; }
+
+.btn-del{background:#e74c3c}
+.btn-edit{background:#f39c12}
+.btn-reset{background:#27ae60}
+.btn-permanent{background:#b33939}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<!-- KEMBALI KE DASHBOARD ADMIN -->
 <a href="dashboard-admin.html" class="back">Kembali</a>
 
 <h1>Kelola Quiz</h1>
@@ -82,12 +94,12 @@ th,td{
 </select>
 
 <button onclick="simpan()">Simpan</button>
-<button class="btn-reset" onclick="restore()">Restore Default</button>
 
 <table>
 <thead>
 <tr>
   <th>Pertanyaan</th>
+  <th>Gambar</th>
   <th>Opsi</th>
   <th>Jawaban</th>
   <th>Aksi</th>
@@ -103,52 +115,38 @@ let editIndex = null;
 
 const defaultQuiz = [
  {q:"Huruf apa setelah JKL?",options:["GHI","MNO","PQR","DEF"],answer:1},
- {
-  q:"Apa makna yang bisa diambil dari cerita Mimi si ulat?",
-  options:[
-   "Jangan bersabar karena tidak akan membuahkan hasil",
-   "Menyerahlah jika sudah lelah",
-   "Kesabaran dan ketekunan akan membawa kita ke mimpi",
-   "Tekun perlu tapi sabar tidak perlu"
-  ],
-  answer:2
- },
+ {q:"Apa makna yang bisa diambil dari cerita Mimi si ulat?",options:["Jangan bersabar karena tidak akan membuahkan hasil","Menyerahlah jika sudah lelah","Kesabaran dan ketekunan akan membawa kita ke mimpi","Tekun perlu tapi sabar tidak perlu"],answer:2},
  {q:"Gambar apakah ini?",image:"kucing.png",options:["Kucing","Beruang","Kelinci","Srigala"],answer:0},
  {q:"Apa yang berbeda dari kedua benda berikut?",image:"kaca-bulat.png",options:["Bentuk","Warna","Tidak Ada","Fungsi"],answer:0},
- {
-  q:"Kegiatan apa yang dilakukan berikut ini?",
-  image:"ibu-memasak.png",
-  options:[
-   "Ibu sedang mencuci baju",
-   "Ibu sedang merapihkan pakaian",
-   "Ibu sedang memasak",
-   "Semuanya salah"
-  ],
-  answer:2
- }
+ {q:"Kegiatan apa yang dilakukan berikut ini?",image:"ibu-memasak.png",options:["Ibu sedang mencuci baju","Ibu sedang merapihkan pakaian","Ibu sedang memasak","Semuanya salah"],answer:2}
 ];
 
+/* Tambahkan properti aktif dan simpan di localStorage */
 if(!localStorage.getItem("quizData")){
-  localStorage.setItem("quizData", JSON.stringify(defaultQuiz));
+  const initData = defaultQuiz.map(d => ({...d, aktif:true}));
+  localStorage.setItem("quizData", JSON.stringify(initData));
 }
 
-const getData = () =>
-  JSON.parse(localStorage.getItem("quizData"));
-
-const saveData = d =>
-  localStorage.setItem("quizData", JSON.stringify(d));
+const getData = () => JSON.parse(localStorage.getItem("quizData"));
+const saveData = d => localStorage.setItem("quizData", JSON.stringify(d));
 
 function render(){
-  list.innerHTML="";
+  list.innerHTML = '';
   getData().forEach((m,i)=>{
-    list.innerHTML+=`
+    const opsiText = m.options.join('<br>');
+    const jawabanText = m.options[m.answer];
+    list.innerHTML += `
       <tr>
         <td>${m.q}</td>
-        <td>${m.options.join("<br>")}</td>
-        <td>${m.options[m.answer]}</td>
+        <td>${m.image || '-'}</td>
+        <td>${opsiText}</td>
+        <td>${jawabanText}</td>
         <td>
-          <button class="btn-edit" onclick="edit(${i})">Edit</button>
-          <button class="btn-del" onclick="hapus(${i})">Hapus</button>
+          <button class="btn-edit" onclick="edit(${i})" ${!m.aktif?'disabled':''}>Edit</button>
+          ${m.aktif
+            ? `<button class="btn-del" onclick="hapus(${i})">Hapus</button>`
+            : `<button class="btn-reset" onclick="restore(${i})">Restore</button>
+               <button class="btn-permanent" onclick="hapusPermanen(${i})">Hapus Permanen</button>`}
         </td>
       </tr>
     `;
@@ -160,14 +158,15 @@ function simpan(){
   const obj = {
     q:q.value,
     options:[o1.value,o2.value,o3.value,o4.value],
-    answer:Number(ans.value)
+    answer:Number(ans.value),
+    aktif:true
   };
   if(img.value) obj.image = img.value;
 
   if(editIndex===null){
     data.push(obj);
   }else{
-    data[editIndex]=obj;
+    data[editIndex] = obj;
     editIndex=null;
   }
 
@@ -177,27 +176,37 @@ function simpan(){
 }
 
 function edit(i){
-  const m=getData()[i];
-  q.value=m.q;
-  o1.value=m.options[0];
-  o2.value=m.options[1];
-  o3.value=m.options[2];
-  o4.value=m.options[3];
-  ans.value=m.answer;
-  img.value=m.image||"";
-  editIndex=i;
+  const m = getData()[i];
+  if(!m.aktif) return alert("Soal ini sudah dihapus, restore dulu");
+  q.value = m.q;
+  o1.value = m.options[0];
+  o2.value = m.options[1];
+  o3.value = m.options[2];
+  o4.value = m.options[3];
+  ans.value = m.answer;
+  img.value = m.image || '';
+  editIndex = i;
 }
 
 function hapus(i){
-  const d=getData();
-  d.splice(i,1);
+  const d = getData();
+  d[i].aktif = false;
   saveData(d);
   render();
 }
 
-function restore(){
-  if(confirm("Balikin ke soal awal?")){
-    saveData(defaultQuiz);
+function restore(i){
+  const d = getData();
+  d[i].aktif = true;
+  saveData(d);
+  render();
+}
+
+function hapusPermanen(i){
+  if(confirm("Yakin hapus soal ini PERMANEN?")){
+    const d = getData();
+    d.splice(i,1);
+    saveData(d);
     render();
   }
 }

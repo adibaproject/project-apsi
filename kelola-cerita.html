@@ -7,7 +7,7 @@
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   background:#f4f6fb;
 }
 .container{
@@ -22,11 +22,18 @@ h1{margin-bottom:16px}
   top:24px;
   right:24px;
   text-decoration:none;
-  background:#444;
+  background:rgba(0,0,0,0.55);
   color:white;
-  padding:8px 14px;
+  padding:10px 16px;
   border-radius:8px;
+  font-weight:bold;
   font-size:14px;
+  transition: transform 0.2s ease, background 0.2s ease;
+  z-index:9999;
+}
+.back:hover{
+  transform: scale(1.08);
+  background: rgba(0,0,0,0.7);
 }
 
 textarea,button{
@@ -42,21 +49,35 @@ button{
   color:white;
   border:none;
   cursor:pointer;
+  font-weight:600;
+  margin-right:4px;
 }
+
 .btn-del{background:#e74c3c}
 .btn-edit{background:#f39c12}
 .btn-reset{background:#27ae60}
+.btn-permanent{background:#b33939}
 
 table{
   width:100%;
   border-collapse:collapse;
   margin-top:16px;
   background:white;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 th,td{
   padding:12px;
   border-bottom:1px solid #eee;
   vertical-align:top;
+  text-align:left;
+}
+th{
+  background:#f0f2ff;
+}
+
+.deleted{
+  color:#999;
+  text-decoration:line-through;
 }
 </style>
 </head>
@@ -71,7 +92,6 @@ th,td{
 <textarea id="isi" placeholder="Isi cerita / scene"></textarea>
 
 <button onclick="simpan()">Simpan</button>
-<button class="btn-reset" onclick="restore()">Restore Default</button>
 
 <table>
 <thead>
@@ -89,7 +109,6 @@ th,td{
 <script>
 let editIndex=null;
 
-/* ===== DATA ASLI CERITA ===== */
 const defaultCerita=[
  {isi:"Di sebuah kebun apel, hiduplah seekor ulat bernama Mimi. Mimi sangat suka memakan daun-daun pohon apel."},
  {isi:"Namun, Mimi sering merasa kesepian dan tidak memiliki teman."},
@@ -103,22 +122,26 @@ const defaultCerita=[
 ];
 
 if(!localStorage.getItem("ceritaData")){
-  localStorage.setItem("ceritaData",JSON.stringify(defaultCerita));
+  localStorage.setItem("ceritaData", JSON.stringify(defaultCerita.map(c=>({...c, aktif:true}))));
 }
 
 const getData=()=>JSON.parse(localStorage.getItem("ceritaData"));
-const saveData=d=>localStorage.setItem("ceritaData",JSON.stringify(d));
+const saveData=d=>localStorage.setItem("ceritaData", JSON.stringify(d));
 
 function render(){
   list.innerHTML="";
   getData().forEach((c,i)=>{
+    const aktif=c.aktif!==false;
     list.innerHTML+=`
-      <tr>
+      <tr class="${aktif?'':'deleted'}">
         <td>Scene ${i+1}</td>
         <td>${c.isi}</td>
         <td>
-          <button class="btn-edit" onclick="edit(${i})">Edit</button>
-          <button class="btn-del" onclick="hapus(${i})">Hapus</button>
+          <button class="btn-edit" onclick="edit(${i})" ${!aktif?'disabled':''}>Edit</button>
+          ${aktif
+            ? `<button class="btn-del" onclick="hapus(${i})">Hapus</button>`
+            : `<button class="btn-reset" onclick="restore(${i})">Restore</button>
+               <button class="btn-permanent" onclick="hapusPermanen(${i})">Hapus Permanen</button>`}
         </td>
       </tr>
     `;
@@ -127,7 +150,7 @@ function render(){
 
 function simpan(){
   const data=getData();
-  const obj={isi:isi.value};
+  const obj={isi:isi.value, aktif:true};
 
   if(!obj.isi.trim()) return alert("Isi cerita kosong");
 
@@ -144,22 +167,31 @@ function simpan(){
 }
 
 function edit(i){
-  isi.value=getData()[i].isi;
+  const m=getData()[i];
+  if(m.aktif===false) return alert("Scene ini sudah dihapus, restore dulu");
+  isi.value=m.isi;
   editIndex=i;
 }
 
 function hapus(i){
   const d=getData();
-  d.splice(i,1);
+  d[i].aktif=false;
   saveData(d);
   render();
 }
 
-function restore(){
-  if(confirm("Balikin ke cerita awal?")){
-    saveData(defaultCerita);
-    render();
-  }
+function restore(i){
+  const d=getData();
+  d[i].aktif=true;
+  saveData(d);
+  render();
+}
+
+function hapusPermanen(i){
+  const d=getData();
+  d.splice(i,1);
+  saveData(d);
+  render();
 }
 
 render();

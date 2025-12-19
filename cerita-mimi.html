@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cerita Mimi – Interaktif</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
-
 <style>
 body{
   margin:0;
@@ -16,139 +14,59 @@ body{
   background:#a8d2ff;
   transition:background 1s ease;
 }
-
 @keyframes cloudSlide{
   from{transform:translateX(0)}
   to{transform:translateX(-33%)}
 }
-
 .awan-container{
-  position:absolute;
-  top:-100px;
-  left:0;
-  width:260%;
-  height:200px;
-  display:flex;
-  animation:cloudSlide 35s linear infinite;
-  z-index:3;
-  pointer-events:none;
+  position:absolute; top:-100px; left:0;
+  width:260%; height:200px;
+  display:flex; animation:cloudSlide 35s linear infinite;
+  z-index:3; pointer-events:none;
 }
-
 .awan-container img{
-  width:200%;
-  height:160%;
-  object-fit:contain;
-  opacity:.95;
+  width:200%; height:160%; object-fit:contain; opacity:.95;
 }
-
 .tanah{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  height:180px;
+  position:absolute; bottom:0; width:100%; height:180px;
   background:url("tanah.png") center/cover no-repeat;
   z-index:1;
 }
-
-.pohon-kiri{
-  position:absolute;
-  bottom:30px;
-  left:-10px;
-  width:420px;
-  z-index:2;
-}
-.pohon-kanan{
-  position:absolute;
-  bottom:60px;
-  right:-30px;
-  width:420px;
-  z-index:2;
-}
-.rumah{
-  position:absolute;
-  bottom:50px;
-  left:50%;
-  transform:translateX(-50%);
-  width:380px;
-  z-index:2;
-}
+.pohon-kiri{ position:absolute; bottom:30px; left:-10px; width:420px; z-index:2; }
+.pohon-kanan{ position:absolute; bottom:60px; right:-30px; width:420px; z-index:2; }
+.rumah{ position:absolute; bottom:50px; left:50%; transform:translateX(-50%); width:380px; z-index:2; }
 
 .ulat{
-  position:absolute;
-  bottom:30px;
-  left:30%;
+  position:absolute; bottom:30px; left:30%;
   transform:translateX(-50%);
-  width:100px;
-  transition:.8s;
-  opacity:0;
-  z-index:10;
+  width:100px; transition:.8s; opacity:0; z-index:10;
 }
 .ulat.show{opacity:1}
-
 #kupu{
-  position:absolute;
-  top:20px;
-  left:-250px;
-  width:80px;
-  opacity:0;
-  z-index:2;
-  transition:1.2s ease;
-  pointer-events:none;
+  position:absolute; top:20px; left:-250px; width:80px; opacity:0;
+  z-index:2; transition:1.2s ease; pointer-events:none;
 }
-#kupu.fly{
-  opacity:1;
-  transform:translateX(420px);
-}
-
-#ulat.kupu-mode{
-  width:100px;
-  bottom:210px;
-  left:20%;
-  transform:translateX(-50%);
-  opacity:1;
-}
+#kupu.fly{ opacity:1; transform:translateX(420px); }
+#ulat.kupu-mode{ width:100px; bottom:210px; left:20%; transform:translateX(-50%); opacity:1; }
 
 .scene{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  text-align:center;
-  padding:40px;
-  color:#fff;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .8s ease;
-  z-index:5;
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  justify-content:center; text-align:center; padding:40px;
+  color:#fff; opacity:0; pointer-events:none; transition:opacity .8s ease; z-index:5;
 }
-.scene.active{
-  opacity:1;
-  pointer-events:auto;
-}
-
+.scene.active{opacity:1; pointer-events:auto;}
 .teks{
-  font-size:32px;
-  max-width:900px;
-  margin:0 auto 30px;
-  line-height:1.4;
+  font-size:32px; max-width:900px; margin:0 auto 30px; line-height:1.4;
   text-shadow:0 2px 3px rgba(0,0,0,.25);
 }
-
 .btn-next{
-  background:rgba(255,255,255,.9);
-  border:none;
-  padding:12px 26px;
-  font-size:22px;
-  border-radius:18px;
-  cursor:pointer;
-  transition:.2s;
-  font-family:"Rubik Bubbles";
+  background:rgba(255,255,255,.9); border:none;
+  padding:12px 26px; font-size:22px; border-radius:18px;
+  cursor:pointer; transition:.2s; font-family:"Rubik Bubbles";
 }
 .btn-next:hover{transform:scale(1.07)}
 </style>
 </head>
-
 <body>
 
 <div class="awan-container">
@@ -164,100 +82,94 @@ body{
 <img id="kupu" src="kupu.png">
 <img id="ulat" class="ulat" src="ulat-normal.png">
 
-<div class="scene active" id="scene1">
-  <div class="teks" id="teks1"></div>
-  <button class="btn-next" onclick="nextScene(2)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene2">
-  <div class="teks" id="teks2"></div>
-  <button class="btn-next" onclick="nextScene(3)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene3">
-  <div class="teks" id="teks3"></div>
-  <button class="btn-next" onclick="nextScene(4)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene4">
-  <div class="teks" id="teks4"></div>
-  <button class="btn-next" onclick="nextScene(5)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene5">
-  <div class="teks" id="teks5"></div>
-  <button class="btn-next" onclick="nextScene(6)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene6">
-  <div class="teks" id="teks6"></div>
-  <button class="btn-next" onclick="nextScene(7)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene7">
-  <div class="teks" id="teks7"></div>
-  <button class="btn-next" onclick="nextScene(8)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene8">
-  <div class="teks" id="teks8"></div>
-  <button class="btn-next" onclick="nextScene(9)">Lanjut</button>
-</div>
-
-<div class="scene" id="scene9">
-  <div class="teks" id="teks9"></div>
-  <button class="btn-next" onclick="window.location.href='dashboard-guru.html'">Selesai</button>
-</div>
+<div id="scenes-container"></div>
 
 <script>
+const ulat = document.getElementById("ulat");
+const kupu = document.getElementById("kupu");
+let current = 1;
+
+// default cerita kalau localStorage kosong
 const defaultCerita=[
-"Di sebuah kebun apel, hiduplah seekor ulat bernama <b>Mimi</b>. Mimi sangat suka memakan daun-daun pohon apel.",
-"Namun, Mimi sering merasa kesepian dan tidak memiliki teman.",
-"Suatu hari, Mimi melihat kupu-kupu cantik terbang tinggi.",
-"\"Bagaimana caranya agar aku bisa terbang?\" pikir Mimi.",
-"Mimi pun mencari jawaban kepada pohon apel.",
-"Pohon apel berkata: bersabarlah, semua ada waktunya.",
-"Mimi membuat kepompong dan menunggu dengan sabar.",
-"Hari demi hari berlalu, Mimi berubah menjadi kupu-kupu.",
-"<b>Pesan moral:</b> Kesabaran membawa kita pada impian."
+  {isi:"Di sebuah kebun apel, hiduplah seekor ulat bernama <b>Mimi</b>. Mimi sangat suka memakan daun-daun pohon apel.", aktif:true},
+  {isi:"Namun, Mimi sering merasa kesepian dan tidak memiliki teman.", aktif:true},
+  {isi:"Suatu hari, Mimi melihat kupu-kupu cantik terbang tinggi.", aktif:true},
+  {isi:"\"Bagaimana caranya agar aku bisa terbang?\" pikir Mimi.", aktif:true},
+  {isi:"Mimi pun mencari jawaban kepada pohon apel.", aktif:true},
+  {isi:"Pohon apel berkata: bersabarlah, semua ada waktunya.", aktif:true},
+  {isi:"Mimi membuat kepompong dan menunggu dengan sabar.", aktif:true},
+  {isi:"Hari demi hari berlalu, Mimi berubah menjadi kupu-kupu.", aktif:true},
+  {isi:"<b>Pesan moral:</b> Kesabaran membawa kita pada impian.", aktif:true}
 ];
 
-const cerita =
- JSON.parse(localStorage.getItem("ceritaData"))?.map(c=>c.isi)
- || defaultCerita;
+// ambil cerita aktif dari localStorage
+function getCerita(){
+  return JSON.parse(localStorage.getItem("ceritaData"))?.filter(c=>c.aktif!==false).map(c=>c.isi) || defaultCerita.map(c=>c.isi);
+}
 
-cerita.forEach((t,i)=>{
- const el=document.getElementById("teks"+(i+1));
- if(el) el.innerHTML=t;
-});
+// render scene otomatis
+function renderScenes(){
+  const cerita = getCerita();
+  const container = document.getElementById("scenes-container");
+  container.innerHTML="";
 
-let current=1;
-const ulat=document.getElementById("ulat");
-const kupu=document.getElementById("kupu");
+  cerita.forEach((text,i)=>{
+    const scene = document.createElement("div");
+    scene.className = "scene" + (i===0?" active":"");
+    scene.id = "scene"+(i+1);
+
+    const teksDiv = document.createElement("div");
+    teksDiv.className = "teks";
+    teksDiv.innerHTML = text;
+
+    const btn = document.createElement("button");
+    btn.className = "btn-next";
+    btn.innerText = i<cerita.length-1?"Lanjut":"Selesai";
+    btn.onclick = ()=> i<cerita.length-1 ? nextScene(i+2) : window.location.href="dashboard-guru.html";
+
+    scene.appendChild(teksDiv);
+    scene.appendChild(btn);
+    container.appendChild(scene);
+  });
+
+  // reset ulat & kupu
+  current = 1;
+  ulat.src="ulat-normal.png";
+  ulat.classList.remove("kupu-mode");
+  ulat.classList.add("show");
+  kupu.classList.remove("fly");
+  document.body.style.background="#a8d2ff";
+}
+
+// panggil render pertama kali
+renderScenes();
+
+// update otomatis kalau admin ubah localStorage
+window.addEventListener('storage', renderScenes);
 
 function nextScene(id){
- document.getElementById("scene"+current).classList.remove("active");
- document.getElementById("scene"+id).classList.add("active");
- current=id;
+  document.getElementById("scene"+current)?.classList.remove("active");
+  document.getElementById("scene"+id)?.classList.add("active");
+  current = id;
 
- kupu.classList.remove("fly");
- if(id===3) kupu.classList.add("fly");
+  kupu.classList.remove("fly");
+  if(id===3) kupu.classList.add("fly");
 
- ulat.classList.remove("kupu-mode");
+  ulat.classList.remove("kupu-mode");
 
- if(id===2) ulat.src="ulat-sedih.png";
- if(id===3) ulat.src="ulat-binar.png";
- if(id===7){
-  ulat.src="kepompong.png";
-  document.body.style.background="#0a1a3a";
- }else{
-  document.body.style.background="#a8d2ff";
- }
- if(id>=8){
-  ulat.src="kupu-mimi.png";
-  ulat.classList.add("kupu-mode");
- }
- ulat.classList.add("show");
+  if(id===2) ulat.src="ulat-sedih.png";
+  if(id===3) ulat.src="ulat-binar.png";
+  if(id===7){
+    ulat.src="kepompong.png";
+    document.body.style.background="#0a1a3a";
+  } else {
+    document.body.style.background="#a8d2ff";
+  }
+  if(id>=8){
+    ulat.src="kupu-mimi.png";
+    ulat.classList.add("kupu-mode");
+  }
+  ulat.classList.add("show");
 }
 </script>
 

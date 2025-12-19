@@ -36,11 +36,12 @@ body{
 .back-btn:hover{ transform:scale(1.08); }
 
 button{
-  padding:12px;
+  padding:6px 10px;
   border:none;
-  border-radius:8px;
+  border-radius:6px;
   cursor:pointer;
   font-weight:600;
+  font-size:12px;
 }
 
 .btn-primary{ background:#2f3e9e; color:#fff; }
@@ -48,21 +49,24 @@ button{
 .btn-warning{ background:#f39c12; color:#fff; }
 .btn-success{ background:#27ae60; color:#fff; }
 .btn-cancel{ background:#ddd; }
+.btn-info{ background:#3498db; color:#fff; }
 
 table{
   width:100%;
   background:#fff;
   border-collapse:collapse;
-  border-radius:12px;
-  overflow:hidden;
+  margin-top:20px;
 }
 
 th,td{
-  padding:14px;
-  border-bottom:1px solid #eee;
+  padding:12px;
+  border:1px solid #ddd;
+  text-align:left;
 }
 
-th{ background:#f0f2ff; }
+th{
+  background:#f0f2ff;
+}
 
 .modal{
   display:none;
@@ -91,6 +95,7 @@ th{ background:#f0f2ff; }
 .modal-footer{
   display:flex;
   gap:10px;
+  flex-wrap:wrap;
 }
 </style>
 </head>
@@ -102,12 +107,12 @@ th{ background:#f0f2ff; }
 <div class="container">
   <h1>Kelola Akun Guru</h1>
   <button class="btn-primary" onclick="openTambah()">+ Tambah Akun Guru</button>
-  <br><br>
 
   <table>
     <thead>
       <tr>
         <th>Email</th>
+        <th>Password</th>
         <th>Status</th>
         <th>Aksi</th>
       </tr>
@@ -121,11 +126,15 @@ th{ background:#f0f2ff; }
     <h3 id="modalTitle"></h3>
 
     <input id="email" placeholder="Email guru">
-    <input id="password" type="password" placeholder="Password">
+    <div style="position:relative;">
+      <input id="password" type="password" placeholder="Password">
+      <button type="button" class="btn-info" style="position:absolute; right:5px; top:5px; padding:4px 8px; font-size:12px;" onclick="togglePassword()">Lihat</button>
+    </div>
 
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Batal</button>
       <button class="btn-primary" onclick="simpan()">Simpan</button>
+      <button class="btn-danger" onclick="hapusPermanen()">Hapus Permanen</button>
     </div>
   </div>
 </div>
@@ -133,7 +142,7 @@ th{ background:#f0f2ff; }
 <script>
 let editIndex = null;
 
-/* AUTO SEED BIAR NETLIFY AMAN */
+/* AUTO SEED */
 if(!localStorage.getItem("guruAccounts")){
   localStorage.setItem("guruAccounts", JSON.stringify([
     { email:"guru@mimo.com", password:"123", aktif:true }
@@ -149,12 +158,15 @@ function render(){
     guruTable.innerHTML += `
     <tr>
       <td>${g.email}</td>
+      <td><span id="pw-${i}">••••••••</span> 
+          <button class="btn-info" onclick="lihatPassword(${i})">Lihat</button></td>
       <td>${g.aktif ? "Aktif" : "Nonaktif"}</td>
       <td>
         ${g.aktif
           ? `<button class="btn-warning" onclick="openEdit(${i})">Edit</button>
-             <button class="btn-danger" onclick="hapus(${i})">Hapus</button>`
-          : `<button class="btn-success" onclick="restore(${i})">Restore</button>`
+             <button class="btn-danger" onclick="hapus(${i})">Nonaktifkan</button>`
+          : `<button class="btn-success" onclick="restore(${i})">Restore</button>
+             <button class="btn-danger" onclick="hapusPermanenIndex(${i})">Hapus Permanen</button>`
         }
       </td>
     </tr>`;
@@ -198,8 +210,54 @@ function simpan(){
   render();
 }
 
-function hapus(i){ const d=getData(); d[i].aktif=false; saveData(d); render(); }
-function restore(i){ const d=getData(); d[i].aktif=true; saveData(d); render(); }
+function hapus(i){ 
+  const d=getData(); 
+  d[i].aktif=false; 
+  saveData(d); 
+  render(); 
+}
+
+function restore(i){ 
+  const d=getData(); 
+  d[i].aktif=true; 
+  saveData(d); 
+  render(); 
+}
+
+function hapusPermanen(){ 
+  if(editIndex===null) return; 
+  if(confirm("Yakin mau hapus akun ini permanen?")) {
+    const d=getData(); 
+    d.splice(editIndex,1); 
+    saveData(d); 
+    closeModal(); 
+    render();
+  }
+}
+
+function hapusPermanenIndex(i){ 
+  if(confirm("Yakin mau hapus akun ini permanen?")) {
+    const d=getData(); 
+    d.splice(i,1); 
+    saveData(d); 
+    render();
+  }
+}
+
+function togglePassword(){
+  const passInput = document.getElementById("password");
+  passInput.type = passInput.type==="password" ? "text" : "password";
+}
+
+function lihatPassword(i){
+  const data=getData();
+  const pwEl=document.getElementById(`pw-${i}`);
+  if(pwEl.innerText === "••••••••"){
+    pwEl.innerText = data[i].password;
+  }else{
+    pwEl.innerText = "••••••••";
+  }
+}
 
 render();
 </script>

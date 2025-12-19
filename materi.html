@@ -153,30 +153,36 @@ const defaultMateri = [
 ];
 
 if(!localStorage.getItem('materiData')){
-  localStorage.setItem('materiData', JSON.stringify(defaultMateri));
+  const initData = defaultMateri.map(d => ({...d, aktif:true}));
+  localStorage.setItem('materiData', JSON.stringify(initData));
 }
 
 /* ========= RENDER MATERI ========= */
 const grid = document.getElementById('materiGrid');
-const data = JSON.parse(localStorage.getItem('materiData')) || [];
 
-let hoverAudio = new Audio();
+function renderMateri(){
+  grid.innerHTML = '';
+  const data = JSON.parse(localStorage.getItem('materiData')) || [];
+  const aktifData = data.filter(m => m.aktif !== false); // hanya yang aktif
 
-grid.innerHTML = '';
+  aktifData.forEach(m=>{
+    const a = document.createElement('a');
+    a.href = m.link;
+    a.className = 'item';
+    a.innerText = m.judul;
 
-data.forEach(m=>{
-  const a = document.createElement('a');
-  a.href = m.link;
-  a.className = 'item';
-  a.innerText = m.judul;
+    a.onmouseover = () => playMateriSound(m.suara);
+    a.onclick     = () => playMateriSound(m.suara);
 
-  a.onmouseover = () => playMateriSound(m.suara);
-  a.onclick     = () => playMateriSound(m.suara);
+    grid.appendChild(a);
+  });
+}
 
-  grid.appendChild(a);
-});
+renderMateri();
 
 /* ========= AUDIO ========= */
+let hoverAudio = new Audio();
+
 function playSound(){
   const a=document.getElementById("soundPlayer");
   a.currentTime=0;

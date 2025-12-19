@@ -16,7 +16,6 @@ body{
   background-size:100% auto,cover;
   overflow-x:hidden;
 }
-
 .cloud{
   position:absolute;
   top:40px;
@@ -26,7 +25,6 @@ body{
 }
 .cloud.left{ left:40px; }
 .cloud.right{ top:90px; right:40px; animation-delay:2s; }
-
 @keyframes cloudWiggle{
   0%{transform:translateX(0)}
   25%{transform:translateX(20px)}
@@ -34,20 +32,17 @@ body{
   75%{transform:translateX(-20px)}
   100%{transform:translateX(0)}
 }
-
 .quiz-container{
   max-width:900px;
   margin:auto;
   padding:80px 20px 220px;
   text-align:center;
 }
-
 .question-box{
   background:rgba(0,0,0,.6);
   padding:22px;
   border-radius:25px;
 }
-
 .image-row{
   display:flex;
   justify-content:center;
@@ -55,22 +50,18 @@ body{
   gap:16px;
   margin:12px 0;
 }
-
 .question-image{
   width:120px;
   border-radius:12px;
   display:none;
   cursor:pointer;
 }
-
 .dino{ width:180px; }
-
 .options{
   display:flex;
   flex-direction:column;
   align-items:center;
 }
-
 .options button{
   width:100%;
   max-width:420px;
@@ -84,7 +75,6 @@ body{
   font-size:19px;
   cursor:pointer;
 }
-
 .popup{
   position:fixed;
   inset:0;
@@ -94,7 +84,6 @@ body{
   justify-content:center;
   z-index:99;
 }
-
 .popup-content{
   width:520px;
   height:260px;
@@ -106,18 +95,13 @@ body{
   justify-content:space-between;
   gap:20px;
 }
-
-.popup-content img{
-  width:180px;
-}
-
+.popup-content img{ width:180px; }
 .popup-text-box p{
   font-size:30px;
   font-weight:bold;
   text-align:left;
   margin:0;
 }
-
 .btn-next{
   position:absolute;
   bottom:24px;
@@ -130,16 +114,13 @@ body{
   font-size:16px;
   cursor:pointer;
 }
-
 .result{
   display:none;
   background:rgba(0,0,0,.7);
   padding:34px;
   border-radius:26px;
 }
-
 .stars{ font-size:36px; }
-
 .btn-back{
   margin-top:20px;
   padding:14px 30px;
@@ -194,47 +175,14 @@ body{
   </div>
 </div>
 
-<!-- AUDIO -->
 <audio id="soundKucing" src="suara-kucing.mp3"></audio>
 <audio id="soundBenar" src="benar.mp3"></audio>
 <audio id="soundSalah" src="salah.mp3"></audio>
 
 <script>
-// ==========================
-// DATA QUIZ (AMAN, TIDAK NGURANGIN ISI)
-// ==========================
-const defaultQuestions = [
- {q:"Huruf apa setelah JKL?",options:["GHI","MNO","PQR","DEF"],answer:1},
- {
-  q:"Apa makna yang bisa diambil dari cerita Mimi si ulat?",
-  options:[
-   "Jangan bersabar karena tidak akan membuahkan hasil",
-   "Menyerahlah jika sudah lelah",
-   "Kesabaran dan ketekunan akan membawa kita ke mimpi",
-   "Tekun perlu tapi sabar tidak perlu"
-  ],
-  answer:2
- },
- {q:"Gambar apakah ini?",image:"kucing.png",options:["Kucing","Beruang","Kelinci","Srigala"],answer:0},
- {q:"Apa yang berbeda dari kedua benda berikut?",image:"kaca-bulat.png",options:["Bentuk","Warna","Tidak Ada","Fungsi"],answer:0},
- {
-  q:"Kegiatan apa yang dilakukan berikut ini?",
-  image:"ibu-memasak.png",
-  options:[
-   "Ibu sedang mencuci baju",
-   "Ibu sedang merapihkan pakaian",
-   "Ibu sedang memasak",
-   "Semuanya salah"
-  ],
-  answer:2
- }
-];
-
-if(!localStorage.getItem("quizData")){
-  localStorage.setItem("quizData", JSON.stringify(defaultQuestions));
-}
-
-const questions = JSON.parse(localStorage.getItem("quizData"));
+// Ambil quiz dari localStorage
+const questions = (JSON.parse(localStorage.getItem("quizData")) || [])
+  .filter(q => q.aktif !== false); // filter soal yang dihapus
 
 let index=0,score=0;
 const qEl=document.getElementById("question");
@@ -250,6 +198,8 @@ const soundBenar=document.getElementById("soundBenar");
 const soundSalah=document.getElementById("soundSalah");
 
 function loadQuestion(){
+ if(index>=questions.length) return showResult();
+
  const q=questions[index];
  qEl.innerText=q.q;
  optEl.innerHTML="";
@@ -265,12 +215,7 @@ function loadQuestion(){
     img2.style.display="block";
   }
 
-  img1.onclick=()=>{
-    if(q.image==="kucing.png"){
-      soundKucing.currentTime=0;
-      soundKucing.play();
-    }
-  };
+  img1.onclick=()=>{ if(q.image==="kucing.png"){ soundKucing.currentTime=0; soundKucing.play(); }};
  }
 
  q.options.forEach((o,i)=>{
@@ -301,8 +246,7 @@ function checkAnswer(i){
 function nextQuestion(){
  popup.style.display="none";
  index++;
- if(index<questions.length) loadQuestion();
- else showResult();
+ loadQuestion();
 }
 
 function showResult(){
@@ -312,10 +256,10 @@ function showResult(){
 
  const fd=document.getElementById("finalDino");
  fd.src =
-  score===5?"dino-senang.png":
-  score===4?"dino-jempol.png":
-  score===3?"dino-datar.png":
-  score===2?"dino-sedih.png":
+  score===questions.length?"dino-senang.png":
+  score>=Math.floor(questions.length*0.8)?"dino-jempol.png":
+  score>=Math.floor(questions.length*0.6)?"dino-datar.png":
+  score>=Math.floor(questions.length*0.4)?"dino-sedih.png":
   "dino-menangis.png";
 
  document.getElementById("scoreText").innerText=`Skor kamu: ${score} dari ${questions.length}`;

@@ -180,9 +180,28 @@ body{
 <audio id="soundSalah" src="salah.mp3"></audio>
 
 <script>
-// Ambil quiz dari localStorage
-const questions = (JSON.parse(localStorage.getItem("quizData")) || [])
-  .filter(q => q.aktif !== false); // filter soal yang dihapus
+/* ===============================
+   AUTO SEED DATA (ANTI NETLIFY BLANK)
+================================ */
+const defaultQuiz = [
+  {
+    q:"Huruf apa setelah JKL?",
+    options:["GHI","MNO","PQR","DEF"],
+    answer:1,
+    aktif:true
+  }
+];
+
+let questions = JSON.parse(localStorage.getItem("quizData"));
+
+if(!questions || questions.length === 0){
+  questions = defaultQuiz;
+  localStorage.setItem("quizData", JSON.stringify(defaultQuiz));
+}
+
+questions = questions.filter(q => q.aktif !== false);
+
+/* =============================== */
 
 let index=0,score=0;
 const qEl=document.getElementById("question");
@@ -215,7 +234,12 @@ function loadQuestion(){
     img2.style.display="block";
   }
 
-  img1.onclick=()=>{ if(q.image==="kucing.png"){ soundKucing.currentTime=0; soundKucing.play(); }};
+  img1.onclick=()=>{ 
+    if(q.image==="kucing.png"){
+      soundKucing.currentTime=0;
+      soundKucing.play();
+    }
+  };
  }
 
  q.options.forEach((o,i)=>{
@@ -253,15 +277,6 @@ function showResult(){
  document.querySelector(".question-box").style.display="none";
  document.getElementById("result").style.display="block";
  document.getElementById("stars").innerText="⭐".repeat(score);
-
- const fd=document.getElementById("finalDino");
- fd.src =
-  score===questions.length?"dino-senang.png":
-  score>=Math.floor(questions.length*0.8)?"dino-jempol.png":
-  score>=Math.floor(questions.length*0.6)?"dino-datar.png":
-  score>=Math.floor(questions.length*0.4)?"dino-sedih.png":
-  "dino-menangis.png";
-
  document.getElementById("scoreText").innerText=`Skor kamu: ${score} dari ${questions.length}`;
 }
 

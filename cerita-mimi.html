@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cerita Mimi – Interaktif</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+
 <style>
 body{
   margin:0;
@@ -52,26 +54,30 @@ body{
 .scene{
   position:absolute; inset:0; display:flex; flex-direction:column;
   justify-content:center; text-align:center; padding:40px;
-  color:#fff; opacity:0; pointer-events:none; transition:opacity .8s ease; z-index:5;
+  color:#fff; opacity:0; pointer-events:none;
+  transition:opacity .8s ease; z-index:5;
 }
 .scene.active{opacity:1; pointer-events:auto;}
 .teks{
-  font-size:32px; max-width:900px; margin:0 auto 30px; line-height:1.4;
+  font-size:32px; max-width:900px; margin:0 auto 30px;
+  line-height:1.4;
   text-shadow:0 2px 3px rgba(0,0,0,.25);
 }
 .btn-next{
   background:rgba(255,255,255,.9); border:none;
-  padding:12px 26px; font-size:22px; border-radius:18px;
-  cursor:pointer; transition:.2s; font-family:"Rubik Bubbles";
+  padding:12px 26px; font-size:22px;
+  border-radius:18px; cursor:pointer;
+  transition:.2s; font-family:"Rubik Bubbles";
 }
 .btn-next:hover{transform:scale(1.07)}
 </style>
 </head>
+
 <body>
 
 <div class="awan-container">
   <img src="awan.png"><img src="awan.png"><img src="awan.png">
-  <img src="awan.png"><img src="awan.png"><img src="awan.png"><img src="awan.png">
+  <img src="awan.png"><img src="awan.png"><img src="awan.png">
 </div>
 
 <div class="tanah"></div>
@@ -84,14 +90,39 @@ body{
 
 <div id="scenes-container"></div>
 
+<!-- AUDIO GLOBAL -->
+<audio id="sceneAudio"></audio>
+
 <script>
 const ulat = document.getElementById("ulat");
 const kupu = document.getElementById("kupu");
+const audio = document.getElementById("sceneAudio");
 let current = 1;
 
-// default cerita kalau localStorage kosong
+/* ===== AUDIO PER SCENE ===== */
+const sceneSounds = {
+  1:"audio/scene1.mp3",
+  2:"audio/scene2.mp3",
+  3:"audio/scene3.mp3",
+  4:"audio/scene4.mp3",
+  5:"audio/scene5.mp3",
+  6:"audio/scene6.mp3",
+  7:"audio/scene7.mp3",
+  8:"audio/scene8.mp3",
+  9:"audio/scene9.mp3"
+};
+
+function playSceneAudio(id){
+  if(!sceneSounds[id]) return;
+  audio.pause();
+  audio.currentTime = 0;
+  audio.src = sceneSounds[id];
+  audio.play().catch(()=>{});
+}
+
+/* ===== CERITA ===== */
 const defaultCerita=[
-  {isi:"Di sebuah kebun apel, hiduplah seekor ulat bernama <b>Mimi</b>. Mimi sangat suka memakan daun-daun pohon apel.", aktif:true},
+  {isi:"Di sebuah kebun apel, hiduplah seekor ulat bernama <b>Mimi</b>.", aktif:true},
   {isi:"Namun, Mimi sering merasa kesepian dan tidak memiliki teman.", aktif:true},
   {isi:"Suatu hari, Mimi melihat kupu-kupu cantik terbang tinggi.", aktif:true},
   {isi:"\"Bagaimana caranya agar aku bisa terbang?\" pikir Mimi.", aktif:true},
@@ -102,74 +133,67 @@ const defaultCerita=[
   {isi:"<b>Pesan moral:</b> Kesabaran membawa kita pada impian.", aktif:true}
 ];
 
-// ambil cerita aktif dari localStorage
 function getCerita(){
-  return JSON.parse(localStorage.getItem("ceritaData"))?.filter(c=>c.aktif!==false).map(c=>c.isi) || defaultCerita.map(c=>c.isi);
+  return JSON.parse(localStorage.getItem("ceritaData"))
+    ?.filter(c=>c.aktif!==false)
+    .map(c=>c.isi) || defaultCerita.map(c=>c.isi);
 }
 
-// render scene otomatis
 function renderScenes(){
   const cerita = getCerita();
   const container = document.getElementById("scenes-container");
   container.innerHTML="";
 
   cerita.forEach((text,i)=>{
-    const scene = document.createElement("div");
-    scene.className = "scene" + (i===0?" active":"");
-    scene.id = "scene"+(i+1);
+    const scene=document.createElement("div");
+    scene.className="scene"+(i===0?" active":"");
+    scene.id="scene"+(i+1);
 
-    const teksDiv = document.createElement("div");
-    teksDiv.className = "teks";
-    teksDiv.innerHTML = text;
+    const teks=document.createElement("div");
+    teks.className="teks";
+    teks.innerHTML=text;
 
-    const btn = document.createElement("button");
-    btn.className = "btn-next";
-    btn.innerText = i<cerita.length-1?"Lanjut":"Selesai";
-    btn.onclick = ()=> i<cerita.length-1 ? nextScene(i+2) : window.location.href="dashboard-guru.html";
+    const btn=document.createElement("button");
+    btn.className="btn-next";
+    btn.innerText=i<cerita.length-1?"Lanjut":"Selesai";
+    btn.onclick=()=> {
+      if(i===0) playSceneAudio(1); // trigger autoplay permission
+      i<cerita.length-1 ? nextScene(i+2) : window.location.href="dashboard-guru.html";
+    };
 
-    scene.appendChild(teksDiv);
+    scene.appendChild(teks);
     scene.appendChild(btn);
     container.appendChild(scene);
   });
 
-  // reset ulat & kupu
-  current = 1;
+  current=1;
   ulat.src="ulat-normal.png";
-  ulat.classList.remove("kupu-mode");
   ulat.classList.add("show");
-  kupu.classList.remove("fly");
-  document.body.style.background="#a8d2ff";
 }
 
-// panggil render pertama kali
 renderScenes();
-
-// update otomatis kalau admin ubah localStorage
-window.addEventListener('storage', renderScenes);
+window.addEventListener("storage", renderScenes);
 
 function nextScene(id){
   document.getElementById("scene"+current)?.classList.remove("active");
   document.getElementById("scene"+id)?.classList.add("active");
-  current = id;
+  current=id;
+
+  playSceneAudio(id);
 
   kupu.classList.remove("fly");
   if(id===3) kupu.classList.add("fly");
 
-  ulat.classList.remove("kupu-mode");
-
-  if(id===2) ulat.src="ulat-sedih.png";
-  if(id===3) ulat.src="ulat-binar.png";
   if(id===7){
     ulat.src="kepompong.png";
     document.body.style.background="#0a1a3a";
-  } else {
-    document.body.style.background="#a8d2ff";
-  }
-  if(id>=8){
+  }else if(id>=8){
     ulat.src="kupu-mimi.png";
     ulat.classList.add("kupu-mode");
+  }else{
+    ulat.src="ulat-normal.png";
+    document.body.style.background="#a8d2ff";
   }
-  ulat.classList.add("show");
 }
 </script>
 
